@@ -36,31 +36,9 @@ export default function HomePage() {
         {/* Hero */}
         <section className="mt-10 md:mt-14">
           <div className="max-w-[900px]">
-            {/* 6 pills */}
-            <div className="flex flex-wrap items-center gap-2 text-xs text-zinc-300">
-              {[
-                "Working Memory",
-                "Logical Reasoning",
-                "Abstract Figures",
-                "Numerical Logic",
-                "Pattern Recognition",
-                "Spatial Reasoning",
-              ].map((label) => (
-                <div
-                  key={label}
-                  className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1"
-                >
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400/80" />
-                  {label}
-                </div>
-              ))}
-            </div>
-
             <h1 className="mt-4 text-4xl md:text-6xl font-semibold leading-[1.02]">
               Most people think they’re above average.{" "}
-              <span className="text-zinc-300">
-                Statistically, you aren’t..
-              </span>
+              <span className="text-zinc-300">Statistically, you aren’t..</span>
             </h1>
 
             <p className="mt-4 max-w-[760px] text-zinc-300 text-[15px] md:text-[18px] leading-relaxed">
@@ -69,14 +47,15 @@ export default function HomePage() {
               uncomfortably specific.
             </p>
 
-            <div className="mt-7 flex flex-wrap items-center gap-3">
-              <Link href="/test">
-                <PrimaryButton className="px-6 py-3 !bg-red-700/90 !text-white hover:!bg-red-600 active:bg-red-700 active:translate-y-[1px] transition-colors">
+            {/* CTA (mobile: stacked, desktop: inline) */}
+            <div className="mt-7 flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+              <Link href="/test" className="w-full sm:w-auto">
+                <PrimaryButton className="w-full sm:w-auto px-6 py-3 !bg-red-700/90 !text-white hover:!bg-red-600 active:bg-red-700 active:translate-y-[1px] transition-colors">
                   Start the test
                 </PrimaryButton>
               </Link>
 
-              <div className="text-sm text-zinc-400">
+              <div className="text-sm text-zinc-400 sm:text-left">
                 Starting the test initiates the timed session.
               </div>
             </div>
@@ -98,9 +77,7 @@ export default function HomePage() {
         {/* Value props */}
         <section className="mt-10 md:mt-12 grid md:grid-cols-3 gap-4">
           <Card className="p-6 !bg-white/5 !border-white/10 !shadow-none">
-            <div className="text-sm font-semibold text-zinc-50">
-              What you get
-            </div>
+            <div className="text-sm font-semibold text-zinc-50">What you get</div>
             <ul className="mt-3 text-sm text-zinc-300 space-y-2">
               <li>Exact IQ estimate</li>
               <li>Raw score + weighted scoring</li>
@@ -120,9 +97,7 @@ export default function HomePage() {
           </Card>
 
           <Card className="p-6 !bg-white/5 !border-white/10 !shadow-none">
-            <div className="text-sm font-semibold text-zinc-50">
-              Built for trust
-            </div>
+            <div className="text-sm font-semibold text-zinc-50">Built for trust</div>
             <p className="mt-3 text-sm text-zinc-300 leading-relaxed">
               No accounts. No fluff. Just a controlled assessment experience —
               and a report that doesn’t feel generic.
@@ -160,46 +135,34 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Footer */}
+        {/* Footer (clean + centered) */}
         <footer className="mt-12 md:mt-16 border-t border-white/10 pt-8">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div className="text-xs text-zinc-500">
-              <span className="whitespace-nowrap">
-                <Link
-                  href="/privacy"
-                  className="hover:text-zinc-200 transition-colors"
-                >
-                  Privacy Policy
-                </Link>
-                <span className="mx-2 text-zinc-600">·</span>
-                <Link
-                  href="/terms"
-                  className="hover:text-zinc-200 transition-colors"
-                >
-                  Terms
-                </Link>
-                <span className="mx-2 text-zinc-600">·</span>
-                <Link
-                  href="/refunds"
-                  className="hover:text-zinc-200 transition-colors"
-                >
-                  Refund Policy
-                </Link>
-                <span className="mx-2 text-zinc-600">·</span>
-                <Link
-                  href="/contact"
-                  className="hover:text-zinc-200 transition-colors"
-                >
-                  Contact
-                </Link>
-              </span>
-              <span className="mx-2 text-zinc-600">·</span>
-              <span>
-                Results are estimates for informational purposes and are not a
-                clinical diagnosis.
-              </span>
-              <span className="mx-2 text-zinc-600">·</span>©{" "}
-              {new Date().getFullYear()} IQ Assessment
+          <div className="mx-auto max-w-[980px] text-center">
+            <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-xs text-zinc-400">
+              <Link href="/privacy" className="hover:text-zinc-200 transition-colors">
+                Privacy Policy
+              </Link>
+              <span className="text-zinc-700">·</span>
+              <Link href="/terms" className="hover:text-zinc-200 transition-colors">
+                Terms
+              </Link>
+              <span className="text-zinc-700">·</span>
+              <Link href="/refunds" className="hover:text-zinc-200 transition-colors">
+                Refund Policy
+              </Link>
+              <span className="text-zinc-700">·</span>
+              <Link href="/contact" className="hover:text-zinc-200 transition-colors">
+                Contact
+              </Link>
+            </div>
+
+            <div className="mt-3 text-xs leading-relaxed text-zinc-500">
+              Results are estimates for informational purposes and are not a
+              clinical diagnosis.
+            </div>
+
+            <div className="mt-3 text-xs text-zinc-600">
+              © {new Date().getFullYear()} IQ Assessment
             </div>
           </div>
         </footer>
