@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Keep it clean and "assessment-like" */
+:root {
+  color-scheme: light;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  @apply bg-gradient-to-b from-zinc-50 to-zinc-100 text-zinc-900;
+}
+
+/* Better selection feel */
+::selection {
+  background: rgba(0,0,0,0.12);
+}
