@@ -280,6 +280,32 @@ export default function ResultsPage() {
     return Math.round(base * 100);
   }
 
+  // --- Anti-cheat / session integrity (display-only, stable + non-accusatory) ---
+  const focusChanges = state?.anti?.focusChanges ?? 0;
+  const reloadedDuringSession = state?.anti?.reloadedDuringSession ?? false;
+
+  const interruptionCount = focusChanges + (reloadedDuringSession ? 2 : 0);
+
+  let integrityTitle = "Assessment conditions: Normal";
+  let integrityNote =
+    "No meaningful interruptions detected. Your result is comparable to a typical uninterrupted session.";
+
+  if (interruptionCount >= 2 && interruptionCount <= 3) {
+    integrityTitle = "Assessment conditions: Minor interruptions";
+    integrityNote =
+      "A few brief interruptions were detected (e.g. tab switch, focus loss). This usually has minimal impact.";
+  } else if (interruptionCount >= 4) {
+    integrityTitle = "Assessment conditions: Interrupted session";
+    integrityNote =
+      "Several interruptions were detected. Your result may be slightly less comparable to a fully uninterrupted session.";
+  }
+
+  const integrityDetailParts: string[] = [];
+  integrityDetailParts.push(`Focus changes: ${focusChanges}`);
+  if (reloadedDuringSession) integrityDetailParts.push("Reload detected: Yes");
+  else integrityDetailParts.push("Reload detected: No");
+  const integrityDetails = integrityDetailParts.join(" · ");
+
   return (
     <main className="min-h-screen">
       <div className="mx-auto max-w-test px-4 md:px-6 py-10">
@@ -322,9 +348,7 @@ export default function ResultsPage() {
                 <li>• Your full visual cognitive profile</li>
               </ul>
 
-              <div className="mt-4 text-xs text-zinc-500">
-                The exact estimate remains hidden until unlocked.
-              </div>
+              <div className="mt-4 text-xs text-zinc-500">The exact estimate remains hidden until unlocked.</div>
             </div>
 
             <div className="mt-6 flex flex-wrap gap-3 items-center">
@@ -354,7 +378,11 @@ export default function ResultsPage() {
 
                 <div>
                   <div className="text-sm font-semibold">Assessment Conditions</div>
-                  <div className="mt-1 text-sm text-zinc-700">{result.assessmentConditions}</div>
+                  <div className="mt-1 text-sm text-zinc-700">
+                    <div className="font-medium">{integrityTitle}</div>
+                    <div className="mt-1">{integrityNote}</div>
+                    <div className="mt-2 text-xs text-zinc-500">{integrityDetails}</div>
+                  </div>
                 </div>
               </div>
 
@@ -434,9 +462,7 @@ export default function ResultsPage() {
           </div>
         )}
 
-        <div className="mt-8 text-xs text-zinc-400">
-          Note: This MVP uses lightweight on-device logic. Payment integration can be added later without changing the test experience.
-        </div>
+        {/* ✅ Removed the MVP note at the bottom */}
       </div>
     </main>
   );
