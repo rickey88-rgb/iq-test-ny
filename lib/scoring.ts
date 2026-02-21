@@ -38,13 +38,12 @@ export type FullResult = {
 export const MAX_WEIGHTED = 64;
 
 function weightForIndex(i: number): number {
-  // i is 0-based question index (1..40)
   const qNum = i + 1;
-  if (qNum <= 10) return 1.0;     // easy
-  if (qNum <= 20) return 1.2;     // medium
-  if (qNum <= 30) return 1.6;     // hard
-  if (qNum <= 35) return 2.2;     // very hard
-  return 3.0;                     // genius tier
+  if (qNum <= 10) return 1.0;
+  if (qNum <= 20) return 1.2;
+  if (qNum <= 30) return 1.6;
+  if (qNum <= 35) return 2.2;
+  return 3.0;
 }
 
 export function computeBreakdown(answers: Answer[]): ScoreBreakdown {
@@ -75,21 +74,21 @@ export function computeBreakdown(answers: Answer[]): ScoreBreakdown {
     }
   }
 
-  // keep one decimal for nicer display
   weightedScore = Math.round(weightedScore * 10) / 10;
 
   return { weightedScore, maxWeightedScore: MAX_WEIGHTED, correctCount, domain };
 }
 
 export function scoreToIQ(weightedScore: number): number {
-  // MVP mapping (locked v1.0)
-  // µ=35, σ=10, IQ = 100 + 15*z
-  const mu = 35;
-  const sigma = 10;
-  const z = (weightedScore - mu) / sigma;
-  const iq = Math.round(100 + 15 * z);
+  // Calibrated mapping v1.1
+  // Slightly higher typical outcomes + softer drop
+  const mu = 30;      // shifted down from 35
+  const sigma = 12;   // wider spread than 10
+  const bonus = 4;    // mild positive bias
 
-  // conservative clamp
+  const z = (weightedScore - mu) / sigma;
+  const iq = Math.round(100 + 15 * z + bonus);
+
   return Math.max(55, Math.min(150, iq));
 }
 
@@ -101,7 +100,6 @@ export function iqToZone(iq: number): ResultZone {
   return "Very High";
 }
 
-// Profile summaries (B-variants) + snippets (B) locked
 const ZONE_PROFILE: Record<ResultZone, { summary: string; snippet: string }> = {
   "Below Average": {
     summary: `You’re stronger than your total score suggests — but only in certain formats.
@@ -156,20 +154,13 @@ That’s a rare advantage.`,
 
 function labelForDomain(d: QuestionDomain): string {
   switch (d) {
-    case "abstract":
-      return "Abstract Pattern Recognition";
-    case "numeric":
-      return "Quantitative Reasoning";
-    case "verbal":
-      return "Verbal Logic";
-    case "relation":
-      return "Associative Reasoning";
-    case "workingMemory":
-      return "Working Memory Under Interference";
-    case "ruleId":
-      return "Rule Identification";
-    case "logic":
-      return "Deductive Consistency";
+    case "abstract": return "Abstract Pattern Recognition";
+    case "numeric": return "Quantitative Reasoning";
+    case "verbal": return "Verbal Logic";
+    case "relation": return "Associative Reasoning";
+    case "workingMemory": return "Working Memory Under Interference";
+    case "ruleId": return "Rule Identification";
+    case "logic": return "Deductive Consistency";
   }
 }
 
@@ -178,17 +169,14 @@ export function buildFullResult(answers: Answer[], anti: AntiCheatSignals): Full
   const iq = scoreToIQ(breakdown.weightedScore);
   const zone = iqToZone(iq);
 
-  // Strengths/limitations from domain accuracy
   const domainEntries = Object.entries(breakdown.domain).map(([k, v]) => {
     const acc = v.total > 0 ? v.correct / v.total : 0;
     return { domain: k as QuestionDomain, acc, correct: v.correct, total: v.total };
   });
 
-  // strengths: top 2 by accuracy
   domainEntries.sort((a, b) => b.acc - a.acc);
   const strengths = domainEntries.slice(0, 2).map((x) => labelForDomain(x.domain));
 
-  // limitations: lowest 1 by accuracy
   domainEntries.sort((a, b) => a.acc - b.acc);
   const limitations = domainEntries.slice(0, 1).map((x) => labelForDomain(x.domain));
 
