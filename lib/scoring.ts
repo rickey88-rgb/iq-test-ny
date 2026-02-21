@@ -94,9 +94,9 @@ export function scoreToIQ(weightedScore: number): number {
 
 export function iqToZone(iq: number): ResultZone {
   if (iq < 90) return "Below Average";
-  if (iq < 110) return "Average Range";
-  if (iq < 125) return "Above Average";
-  if (iq < 140) return "High Intelligence";
+  if (iq < 100) return "Average Range";
+  if (iq < 115) return "Above Average";
+  if (iq < 130) return "High Intelligence";
   return "Very High";
 }
 
