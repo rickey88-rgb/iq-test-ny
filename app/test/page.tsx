@@ -12,6 +12,11 @@ import { loadState, saveState, StoredState } from "@/lib/storage";
 
 const DURATION_MS = 30 * 60_000;
 
+// Anti-cheat tuning (basal + stable)
+const ANTI_GRACE_MS = 1500; // ignore focus/vis events right after load
+const ANTI_COOLDOWN_MS = 1200; // prevent rapid double-counting
+const ACTIVE_SESSION_KEY = "iqtest_active_session_v1";
+
 function initAnswers(): Answer[] {
   return QUESTIONS.map((q) => ({ questionId: q.id, selectedIndex: null }));
 }
@@ -26,44 +31,86 @@ export default function TestPage() {
   const [locked, setLocked] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  // anti-cheat (minimal)
+  // anti-cheat (minimal + robust)
   const [focusChanges, setFocusChanges] = useState(0);
   const [reloadedFlag, setReloadedFlag] = useState(false);
+
+  const mountedAtRef = useRef<number>(Date.now());
+  const lastAntiEventAtRef = useRef<number>(0);
 
   // ✅ Prevent double-advance when user clicks fast
   const advancingRef = useRef(false);
   const advanceTimeoutRef = useRef<number | null>(null);
 
+  // Helper: should we count anti-cheat events?
+  const shouldCountAntiEvent = () => {
+    if (locked || submitting) return false;
+    const now = Date.now();
+
+    // ignore noisy events right after load
+    if (now - mountedAtRef.current < ANTI_GRACE_MS) return false;
+
+    // cooldown to avoid rapid double counting
+    if (now - lastAntiEventAtRef.current < ANTI_COOLDOWN_MS) return false;
+
+    lastAntiEventAtRef.current = now;
+    return true;
+  };
+
   // Restore from sessionStorage if present
   useEffect(() => {
+    mountedAtRef.current = Date.now();
+
     const s = loadState();
-    if (s && s.endTime > Date.now() && !s.submittedAt) {
+    const now = Date.now();
+
+    // Reload detection (real): if we already had an "active session" marker, this load is a reload/revisit mid-session
+    const hadActiveMarker = sessionStorage.getItem(ACTIVE_SESSION_KEY) === "1";
+    sessionStorage.setItem(ACTIVE_SESSION_KEY, "1");
+
+    if (s && s.endTime > now && !s.submittedAt) {
       setAnswers(s.answers);
       setStartedAt(s.startedAt);
       setEndTime(s.endTime);
+
+      // keep previous anti state
       setFocusChanges(s.anti.focusChanges);
-      setReloadedFlag(true); // restore mid-session => effectively a reload
+
+      // Only mark reload if it truly looks like a reload mid-session
+      // (active marker existed OR stored anti already says it happened)
+      setReloadedFlag(Boolean(hadActiveMarker || s.anti.reloadedDuringSession));
+
       const firstUnanswered = s.answers.findIndex((a) => a.selectedIndex === null);
       setCurrentIndex(firstUnanswered >= 0 ? firstUnanswered : TOTAL_QUESTIONS - 1);
     } else {
-      const now = Date.now();
-      setStartedAt(now);
-      setEndTime(now + DURATION_MS);
+      const freshStart = now;
+      setStartedAt(freshStart);
+      setEndTime(freshStart + DURATION_MS);
+      setAnswers(initAnswers());
+      setFocusChanges(0);
+      setReloadedFlag(false);
+
       saveState({
-        startedAt: now,
-        endTime: now + DURATION_MS,
+        startedAt: freshStart,
+        endTime: freshStart + DURATION_MS,
         answers: initAnswers(),
         anti: { focusChanges: 0, reloadedDuringSession: false },
       });
     }
   }, []);
 
-  // Minimal focus monitoring (aura + session comparability)
+  // Minimal focus monitoring (basal + stable)
   useEffect(() => {
     const onVis = () => {
-      if (document.hidden) setFocusChanges((c) => c + 1);
+      if (!document.hidden) return;
+      if (!shouldCountAntiEvent()) return;
+      setFocusChanges((c) => c + 1);
     };
-    const onBlur = () => setFocusChanges((c) => c + 1);
+
+    const onBlur = () => {
+      if (!shouldCountAntiEvent()) return;
+      setFocusChanges((c) => c + 1);
+    };
 
     document.addEventListener("visibilitychange", onVis);
     window.addEventListener("blur", onBlur);
@@ -72,7 +119,8 @@ export default function TestPage() {
       document.removeEventListener("visibilitychange", onVis);
       window.removeEventListener("blur", onBlur);
     };
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [locked, submitting]);
 
   // Persist state
   useEffect(() => {
@@ -122,6 +170,10 @@ export default function TestPage() {
     };
 
     saveState(stored);
+
+    // session completed -> remove active marker so next visit doesn't look like a "reload mid-session"
+    sessionStorage.removeItem(ACTIVE_SESSION_KEY);
+
     router.replace("/results");
   };
 
@@ -176,7 +228,7 @@ export default function TestPage() {
       } else {
         setCurrentIndex((i) => Math.min(TOTAL_QUESTIONS - 1, i + 1));
       }
-    }, 250); // slightly quicker; also reduces “double tap” window
+    }, 250);
   };
 
   return (
