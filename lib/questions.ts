@@ -1,34 +1,3 @@
-export type QuestionDomain =
-  | "abstract"
-  | "numeric"
-  | "verbal"
-  | "relation"
-  | "workingMemory"
-  | "ruleId"
-  | "logic";
-
-export type MCQuestion = {
-  id: string;
-  type: "mc";
-  domain: QuestionDomain;
-  prompt: string;
-  options: string[];
-  correctIndex: number;
-};
-
-export type MemoryQuestion = {
-  id: string;
-  type: "memory";
-  domain: QuestionDomain;
-  sequence: string[];
-  showMs: number;
-  questionText: string;
-  options: string[];
-  correctIndex: number;
-};
-
-export type Question = MCQuestion | MemoryQuestion;
-
 export const QUESTIONS: Question[] = [
   {
     id: "q01",
@@ -68,14 +37,13 @@ export const QUESTIONS: Question[] = [
     correctIndex: 1,
   },
 
-  // FIXED: correct option was missing
   {
     id: "q05",
     type: "mc",
-    domain: "abstract",
-    prompt: "■ ■ ●   ■ ■ ●   ?",
-    options: ["■ ■ ●", "■ ■", "■ ●", "● ■"],
-    correctIndex: 0,
+    domain: "logic",
+    prompt: "You overtake the person in 2nd place.\nWhat place are you in now?",
+    options: ["1st", "2nd", "3rd", "4th"],
+    correctIndex: 1,
   },
 
   {
@@ -104,13 +72,13 @@ export const QUESTIONS: Question[] = [
     correctIndex: 2,
   },
 
-  // FIXED: correct option was missing (prompt shows repeating group)
   {
     id: "q09",
     type: "mc",
-    domain: "abstract",
-    prompt: "▲ ▲ ● ●   ▲ ▲ ● ●   ?",
-    options: ["▲ ▲ ● ●", "▲ ▲", "● ●", "▲"],
+    domain: "numeric",
+    prompt:
+      "A pen and an eraser cost 22 kr total.\nThe pen costs 20 kr more than the eraser.\nWhat does the eraser cost?",
+    options: ["1 kr", "2 kr", "10 kr", "11 kr"],
     correctIndex: 0,
   },
 
@@ -123,17 +91,15 @@ export const QUESTIONS: Question[] = [
     correctIndex: 1,
   },
 
-  // FIXED: alternating ends with ●, next is ■
   {
     id: "q11",
     type: "mc",
-    domain: "abstract",
-    prompt: "■ ● ■ ● ■ ● ?",
-    options: ["■", "●", "■ ●", "● ■"],
-    correctIndex: 0,
+    domain: "logic",
+    prompt: 'A person says:\n"I am lying right now."\nIs that statement possible?',
+    options: ["Yes", "No", "Only if joking", "Cannot be determined"],
+    correctIndex: 1,
   },
 
-  // FIXED: +3 sequence => 16
   {
     id: "q12",
     type: "mc",
@@ -180,6 +146,7 @@ export const QUESTIONS: Question[] = [
     ],
     correctIndex: 0,
   },
+
   {
     id: "q16",
     type: "mc",
@@ -188,6 +155,7 @@ export const QUESTIONS: Question[] = [
     options: ["▲", "●", "▲ ●", "● ●"],
     correctIndex: 1,
   },
+
   {
     id: "q17",
     type: "mc",
@@ -197,18 +165,18 @@ export const QUESTIONS: Question[] = [
     options: ["4 → 7", "4 → 8", "4 → 10", "4 → 5"],
     correctIndex: 0,
   },
+
   {
     id: "q18",
     type: "mc",
-    domain: "ruleId",
+    domain: "logic",
     prompt:
-      "Examples (follow the same rule):\n2 → 6\n3 → 9\n4 → 12\n\nWhich option follows the same rule?",
-    options: ["5 → 15", "5 → 14", "5 → 12", "5 → 10"],
+      "Three people sit at a table.\nAnna looks at Björn.\nBjörn looks at Clara.\nExactly one of them is intelligent.\n\nIs an intelligent person looking at a less intelligent person?",
+    options: ["Yes", "No", "Cannot be determined", "Only sometimes"],
     correctIndex: 0,
   },
 
-  // FIXED: correct conclusion "Some A are C" was missing
-  {
+    {
     id: "q19",
     type: "mc",
     domain: "logic",
@@ -225,6 +193,7 @@ export const QUESTIONS: Question[] = [
     options: ["Thought", "Plan", "Result", "Development"],
     correctIndex: 3,
   },
+
   {
     id: "q21",
     type: "memory",
@@ -241,17 +210,16 @@ export const QUESTIONS: Question[] = [
     correctIndex: 1,
   },
 
-  // FIXED: differences +3,+5,+7,+9 => 27
   {
     id: "q22",
     type: "mc",
     domain: "numeric",
-    prompt: "3, 6, 11, 18, ?",
-    options: ["25", "27", "29", "31"],
+    prompt:
+      "Choose one:\nA) 1,000,000 kr today\nB) 1 kr doubled every day for 20 days\n\nWhich is worth more?",
+    options: ["A", "B", "They are equal", "Cannot be determined"],
     correctIndex: 1,
   },
 
-  // FIXED: selected the only continuation that matches the shown progression (moves toward ● ▲ ▲)
   {
     id: "q23",
     type: "mc",
@@ -267,9 +235,15 @@ export const QUESTIONS: Question[] = [
     domain: "logic",
     prompt:
       "If it rains, the ground gets wet.\nThe ground is not wet.\nWhat follows logically?",
-    options: ["It rained", "It did not rain", "It may have rained", "It cannot be determined"],
+    options: [
+      "It rained",
+      "It did not rain",
+      "It may have rained",
+      "It cannot be determined",
+    ],
     correctIndex: 1,
   },
+
   {
     id: "q25",
     type: "memory",
@@ -285,6 +259,7 @@ export const QUESTIONS: Question[] = [
     ],
     correctIndex: 0,
   },
+
   {
     id: "q26",
     type: "mc",
@@ -294,6 +269,7 @@ export const QUESTIONS: Question[] = [
     options: ["LAMP → AMPL", "LAMP → PLAM", "LAMP → LMAP", "LAMP → LAMP"],
     correctIndex: 1,
   },
+
   {
     id: "q27",
     type: "mc",
@@ -303,7 +279,6 @@ export const QUESTIONS: Question[] = [
     correctIndex: 2,
   },
 
-  // FIXED: continuation should be ● ● ■
   {
     id: "q28",
     type: "mc",
@@ -328,6 +303,7 @@ export const QUESTIONS: Question[] = [
     ],
     correctIndex: 0,
   },
+
   {
     id: "q30",
     type: "mc",
@@ -336,29 +312,36 @@ export const QUESTIONS: Question[] = [
     options: ["Oxygen", "Air", "Blood", "Body"],
     correctIndex: 1,
   },
+
   {
     id: "q31",
-    type: "memory",
-    domain: "workingMemory",
-    sequence: ["B", "A", "4", "3", "▲", "●", "9"],
-    showMs: 2000,
-    questionText: "Which option shows the same order?",
+    type: "mc",
+    domain: "logic",
+    prompt:
+      "On an island, truth-tellers always tell the truth, and liars always lie.\nYou ask someone: “Are you a liar?”\nThey answer: “Yes.”\n\nWhat are they?",
     options: [
-      "B – A – 4 – 3 – ▲ – ● – 9",
-      "A – B – 4 – 3 – ▲ – ● – 9",
-      "B – A – 3 – 4 – ▲ – ● – 9",
-      "B – A – 4 – 3 – ● – ▲ – 9",
+      "Truth-teller",
+      "Liar",
+      "Impossible scenario",
+      "Cannot be determined",
     ],
-    correctIndex: 0,
+    correctIndex: 2,
   },
+
   {
     id: "q32",
     type: "mc",
     domain: "ruleId",
     prompt: "Which rule best describes the series?\n2, 5, 10, 17, 26",
-    options: ["Increasing odd differences", "n² + 1", "n × (n + 1)", "Doubling + 1"],
+    options: [
+      "Increasing odd differences",
+      "n² + 1",
+      "n × (n + 1)",
+      "Doubling + 1",
+    ],
     correctIndex: 0,
   },
+
   {
     id: "q33",
     type: "mc",
@@ -367,6 +350,7 @@ export const QUESTIONS: Question[] = [
     options: ["■ ● ▲", "● ▲ ■", "▲ ■ ●", "■ ▲ ●"],
     correctIndex: 0,
   },
+
   {
     id: "q34",
     type: "mc",
@@ -375,6 +359,7 @@ export const QUESTIONS: Question[] = [
     options: ["25", "30", "32", "35"],
     correctIndex: 1,
   },
+
   {
     id: "q35",
     type: "mc",
@@ -384,15 +369,16 @@ export const QUESTIONS: Question[] = [
     options: ["1", "2", "3", "None"],
     correctIndex: 2,
   },
+
   {
     id: "q36",
     type: "mc",
     domain: "ruleId",
-    prompt:
-      "Examples (follow the same rule):\nABBA\nCDDC\nXYYX\n\nWhich option follows the same rule?",
-    options: ["ABCA", "QTTQ", "KLMK", "MMMN"],
-    correctIndex: 1,
+    prompt: "Which option breaks the pattern?",
+    options: ["3–6–12", "5–10–20", "7–14–28", "9–18–35"],
+    correctIndex: 3,
   },
+
   {
     id: "q37",
     type: "mc",
@@ -401,6 +387,7 @@ export const QUESTIONS: Question[] = [
     options: ["▲ ● ■", "■ ▲ ●", "● ■ ▲", "▲ ■ ●"],
     correctIndex: 0,
   },
+
   {
     id: "q38",
     type: "memory",
@@ -416,6 +403,7 @@ export const QUESTIONS: Question[] = [
     ],
     correctIndex: 0,
   },
+
   {
     id: "q39",
     type: "mc",
@@ -426,16 +414,18 @@ export const QUESTIONS: Question[] = [
     correctIndex: 0,
   },
 
-  // FIXED: original was logically inconsistent. Minimal fix: make it solvable.
   {
     id: "q40",
     type: "mc",
     domain: "logic",
     prompt:
-      'Exactly one statement is true:\nA: “B is false”\nB: “C is true”\nC: “A is false”\nWhich is true?',
-    options: ["A", "B", "C", "None"],
-    correctIndex: 0,
+      "80% of people think they are smarter than average.\nIf that were true — what does it mean?",
+    options: [
+      "Most people are correct",
+      "It is mathematically impossible",
+      "The average is wrong",
+      "It says nothing",
+    ],
+    correctIndex: 1,
   },
 ] as const;
-
-export const TOTAL_QUESTIONS = QUESTIONS.length;
