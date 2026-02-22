@@ -231,7 +231,7 @@ export default function ResultsPage() {
 
   // ✅ CHANGED: send user to Stripe Payment Link instead of unlocking locally
   const unlock = () => {
-    window.location.href = "https://buy.stripe.com/5kQ3cub978MpdcPcb60gw02";
+    window.location.href = "https://buy.stripe.com/test_28E3cu4MSg1b3Ut1Mf9AA01";
   };
 
   const copySnippet = async () => {
