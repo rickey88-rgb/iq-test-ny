@@ -352,7 +352,12 @@ export default function ResultsPage() {
             </div>
 
             <div className="mt-6 flex flex-wrap gap-3 items-center">
-              <PrimaryButton onClick={unlock}>Reveal exact result</PrimaryButton>
+              <PrimaryButton
+  onClick={unlock}
+  className="bg-green-600 hover:bg-green-700 text-white"
+>
+  Reveal exact result
+</PrimaryButton>
               <div className="text-sm text-zinc-500">Exact estimate stays locked.</div>
             </div>
 
