@@ -203,7 +203,12 @@ function RadarChart({
 
 export default function ResultsPage() {
   const [unlocked, setUnlockedState] = useState(false);
-
+ // Track reach_paywall
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.gtag) {
+      window.gtag("event", "reach_paywall");
+    }
+  }, []);
   useEffect(() => {
     setUnlockedState(isUnlocked());
   }, []);
@@ -231,6 +236,12 @@ export default function ResultsPage() {
 
   // ✅ CHANGED: send user to Stripe Payment Link instead of unlocking locally
   const unlock = () => {
+    // Track click_reveal
+  if (typeof window !== "undefined" && window.gtag) {
+    window.gtag("event", "click_reveal", {
+      transport_type: "beacon",
+    });
+  }
     window.location.href = "https://buy.stripe.com/test_28E3cu4MSg1b3Ut1Mf9AA01";
   };
 
