@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Card, PrimaryButton } from "@/components/ui";
-
+import StartTestCta from "@/components/StartTestCta";
 function Stat({ k, v }: { k: string; v: string }) {
   return (
     <div className="rounded-2xl border border-black/10 bg-black/5 px-4 py-3">
@@ -49,11 +49,9 @@ export default function HomePage() {
 
             {/* CTA (mobile: stacked, desktop: inline) */}
             <div className="mt-7 flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
-              <Link href="/test" className="w-full sm:w-auto">
-                <PrimaryButton className="w-full sm:w-auto px-6 py-3 !bg-teal-700/90 !text-white hover:!bg-teal-600 active:bg-teal-700 active:translate-y-[1px] transition-colors">
-                  Start the test
-                </PrimaryButton>
-              </Link>
+             <div className="w-full sm:w-auto">
+  <StartTestCta />
+</div>
 
               <div className="text-sm text-zinc-600 sm:text-left">
                 Starting the test initiates the timed session.
