@@ -3,8 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Card, PrimaryButton, GhostButton } from "@/components/ui";
-import { DISCLAIMER } from "@/lib/scoring";
-import { loadState, setUnlocked, isUnlocked } from "@/lib/storage";
+import { buildFullResult, DISCLAIMER } from "@/lib/scoring";
+import { loadState, saveState, setUnlocked, isUnlocked } from "@/lib/storage";
 
 function clamp(n: number, a: number, b: number) {
   return Math.max(a, Math.min(b, n));
@@ -213,11 +213,23 @@ export default function ResultsPage() {
     setUnlockedState(isUnlocked());
   }, []);
 
-  const state = useMemo(() => loadState(), []);
-  const result = state?.result;
+ const state = useMemo(() => loadState(), []);
 
-  if (!result) {
-    return (
+const result = useMemo(() => {
+  if (!state) return null;
+  if (state.result) return state.result;
+  return buildFullResult(state.answers, state.anti);
+}, [state]);
+
+useEffect(() => {
+  if (!state) return;
+  if (!result) return;
+  if (state.result) return;
+  saveState({ ...state, result });
+}, [state, result]);
+
+if (!result) {
+  return (
       <main className="min-h-screen">
         <div className="mx-auto max-w-test px-4 md:px-6 py-10">
           <Card className="p-6">
@@ -234,16 +246,25 @@ export default function ResultsPage() {
     );
   }
 
-  // ✅ CHANGED: send user to Stripe Payment Link instead of unlocking locally
-  const unlock = () => {
-    // Track click_reveal
+  // ✅ Send user to Stripe Payment Link instead of unlocking locally
+const unlock = () => {
+  // Track click_reveal
   if (typeof window !== "undefined" && window.gtag) {
     window.gtag("event", "click_reveal", {
       transport_type: "beacon",
     });
   }
-    window.location.href = "https://buy.stripe.com/test_28E3cu4MSg1b3Ut1Mf9AA01";
-  };
+
+  // 🔒 Force persist current state before leaving page (important for Stripe redirect)
+  const currentState = loadState();
+  if (currentState) {
+    saveState(currentState);
+  }
+
+  // Redirect to Stripe
+  window.location.href =
+    "https://buy.stripe.com/test_28E3cu4MSg1b3Ut1Mf9AA01";
+};
 
   const copySnippet = async () => {
     try {

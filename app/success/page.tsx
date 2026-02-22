@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { setUnlocked } from "@/lib/storage";
 
 declare global {
   interface Window {
@@ -10,6 +11,10 @@ declare global {
 
 export default function SuccessPage() {
   useEffect(() => {
+    // Mark user as unlocked locally (so /results shows the unlocked state)
+    setUnlocked(true);
+
+    // Track purchase
     if (typeof window !== "undefined" && window.gtag) {
       window.gtag("event", "purchase", {
         value: 99,
