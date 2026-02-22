@@ -162,7 +162,7 @@ export default function HomePage() {
             </div>
 
             <div className="mt-3 text-xs text-zinc-500">
-              © {new Date().getFullYear()} IQ Assessment
+              © {new Date().getFullYear()} UnlockYourIQ.com
             </div>
           </div>
         </footer>
