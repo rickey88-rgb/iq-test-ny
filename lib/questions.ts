@@ -1,3 +1,33 @@
+export type QuestionDomain =
+  | "abstract"
+  | "numeric"
+  | "verbal"
+  | "relation"
+  | "workingMemory"
+  | "ruleId"
+  | "logic";
+
+export type MCQuestion = {
+  id: string;
+  type: "mc";
+  domain: QuestionDomain;
+  prompt: string;
+  options: string[];
+  correctIndex: number;
+};
+
+export type MemoryQuestion = {
+  id: string;
+  type: "memory";
+  domain: QuestionDomain;
+  sequence: string[];
+  showMs: number;
+  questionText: string;
+  options: string[];
+  correctIndex: number;
+};
+
+export type Question = MCQuestion | MemoryQuestion;
 export const QUESTIONS: Question[] = [
   {
     id: "q01",
@@ -429,3 +459,5 @@ export const QUESTIONS: Question[] = [
     correctIndex: 1,
   },
 ] as const;
+
+export const TOTAL_QUESTIONS = QUESTIONS.length;
