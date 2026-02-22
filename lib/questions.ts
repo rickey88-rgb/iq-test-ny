@@ -103,13 +103,13 @@ export const QUESTIONS: Question[] = [
   },
 
   {
-    id: "q09",
-    type: "mc",
-    domain: "numeric",
-    prompt:
-      "A pen and an eraser cost 22 kr total.\nThe pen costs 20 kr more than the eraser.\nWhat does the eraser cost?",
-    options: ["1 kr", "2 kr", "10 kr", "11 kr"],
-    correctIndex: 0,
+  id: "q09",
+  type: "mc",
+  domain: "numeric",
+  prompt:
+    "A pen and an eraser cost $22 in total.\nThe pen costs $20 more than the eraser.\nHow much does the eraser cost?",
+  options: ["$1", "$2", "$10", "$11"],
+  correctIndex: 0,
   },
 
   {
