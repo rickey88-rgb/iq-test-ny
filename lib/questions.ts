@@ -201,7 +201,7 @@ export const QUESTIONS: Question[] = [
     type: "mc",
     domain: "logic",
     prompt:
-      "Three people sit at a table.\nAnna looks at Björn.\nBjörn looks at Clara.\nExactly one of them is intelligent.\n\nIs an intelligent person looking at a less intelligent person?",
+      "Three people sit at a table.\nAnna looks at Brian.\nBrian looks at Clara.\nExactly one of them is intelligent.\n\nIs an intelligent person looking at a less intelligent person?",
     options: ["Yes", "No", "Cannot be determined", "Only sometimes"],
     correctIndex: 0,
   },
