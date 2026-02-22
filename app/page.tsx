@@ -3,9 +3,9 @@ import { Card, PrimaryButton } from "@/components/ui";
 
 function Stat({ k, v }: { k: string; v: string }) {
   return (
-    <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3">
-      <div className="text-xs uppercase tracking-wider text-zinc-400">{k}</div>
-      <div className="mt-1 text-sm md:text-base font-semibold text-zinc-100">
+    <div className="rounded-2xl border border-black/10 bg-black/5 px-4 py-3">
+      <div className="text-xs uppercase tracking-wider text-zinc-500">{k}</div>
+      <div className="mt-1 text-sm md:text-base font-semibold text-zinc-900">
         {v}
       </div>
     </div>
@@ -14,18 +14,18 @@ function Stat({ k, v }: { k: string; v: string }) {
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-zinc-950 text-zinc-50">
+    <main className="min-h-screen bg-[#F7F6F3] text-zinc-900">
       {/* subtle background */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-white/5 blur-3xl" />
-        <div className="absolute top-[35%] -left-40 h-[420px] w-[420px] rounded-full bg-white/4 blur-3xl" />
-        <div className="absolute bottom-[-220px] right-[-120px] h-[560px] w-[560px] rounded-full bg-white/4 blur-3xl" />
+        <div className="absolute -top-40 left-1/2 h-[520px] w-[520px] -translate-x-1/2 rounded-full bg-black/5 blur-3xl" />
+        <div className="absolute top-[35%] -left-40 h-[420px] w-[420px] rounded-full bg-black/4 blur-3xl" />
+        <div className="absolute bottom-[-220px] right-[-120px] h-[560px] w-[560px] rounded-full bg-black/4 blur-3xl" />
       </div>
 
       <div className="relative mx-auto max-w-landing px-5 md:px-8 py-12 md:py-16">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div className="text-xs uppercase tracking-wider text-zinc-400">
+          <div className="text-xs uppercase tracking-wider text-zinc-500">
             IQ Assessment
           </div>
           <div className="text-xs text-zinc-500">
@@ -38,10 +38,10 @@ export default function HomePage() {
           <div className="max-w-[900px]">
             <h1 className="mt-4 text-4xl md:text-6xl font-semibold leading-[1.02]">
               Most people think they’re above average.{" "}
-              <span className="text-zinc-300">Statistically, you aren’t..</span>
+              <span className="text-zinc-600">Statistically, you aren’t..</span>
             </h1>
 
-            <p className="mt-4 max-w-[760px] text-zinc-300 text-[15px] md:text-[18px] leading-relaxed">
+            <p className="mt-4 max-w-[760px] text-zinc-700 text-[15px] md:text-[18px] leading-relaxed">
               40 questions. 30 minutes. No backtracking. Built to feel like an
               exam — clean UI, controlled pressure, and results that feel
               uncomfortably specific.
@@ -50,12 +50,12 @@ export default function HomePage() {
             {/* CTA (mobile: stacked, desktop: inline) */}
             <div className="mt-7 flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
               <Link href="/test" className="w-full sm:w-auto">
-                <PrimaryButton className="w-full sm:w-auto px-6 py-3 !bg-red-700/90 !text-white hover:!bg-red-600 active:bg-red-700 active:translate-y-[1px] transition-colors">
+                <PrimaryButton className="w-full sm:w-auto px-6 py-3 !bg-teal-700/90 !text-white hover:!bg-teal-600 active:bg-teal-700 active:translate-y-[1px] transition-colors">
                   Start the test
                 </PrimaryButton>
               </Link>
 
-              <div className="text-sm text-zinc-400 sm:text-left">
+              <div className="text-sm text-zinc-600 sm:text-left">
                 Starting the test initiates the timed session.
               </div>
             </div>
@@ -76,9 +76,9 @@ export default function HomePage() {
 
         {/* Value props */}
         <section className="mt-10 md:mt-12 grid md:grid-cols-3 gap-4">
-          <Card className="p-6 !bg-white/5 !border-white/10 !shadow-none">
-            <div className="text-sm font-semibold text-zinc-50">What you get</div>
-            <ul className="mt-3 text-sm text-zinc-300 space-y-2">
+          <Card className="p-6 !bg-black/5 !border-black/10 !shadow-none">
+            <div className="text-sm font-semibold text-zinc-900">What you get</div>
+            <ul className="mt-3 text-sm text-zinc-700 space-y-2">
               <li>Exact IQ estimate</li>
               <li>Raw score + weighted scoring</li>
               <li>Strengths, limitations, profile summary</li>
@@ -86,19 +86,19 @@ export default function HomePage() {
             </ul>
           </Card>
 
-          <Card className="p-6 !bg-white/5 !border-white/10 !shadow-none">
-            <div className="text-sm font-semibold text-zinc-50">
+          <Card className="p-6 !bg-black/5 !border-black/10 !shadow-none">
+            <div className="text-sm font-semibold text-zinc-900">
               Pressure, by design
             </div>
-            <p className="mt-3 text-sm text-zinc-300 leading-relaxed">
+            <p className="mt-3 text-sm text-zinc-700 leading-relaxed">
               The timer isn’t decoration. It’s part of the measurement — it
               separates clear thinking from comfortable thinking.
             </p>
           </Card>
 
-          <Card className="p-6 !bg-white/5 !border-white/10 !shadow-none">
-            <div className="text-sm font-semibold text-zinc-50">Built for trust</div>
-            <p className="mt-3 text-sm text-zinc-300 leading-relaxed">
+          <Card className="p-6 !bg-black/5 !border-black/10 !shadow-none">
+            <div className="text-sm font-semibold text-zinc-900">Built for trust</div>
+            <p className="mt-3 text-sm text-zinc-700 leading-relaxed">
               No accounts. No fluff. Just a controlled assessment experience —
               and a report that doesn’t feel generic.
             </p>
@@ -107,27 +107,27 @@ export default function HomePage() {
 
         {/* How it works */}
         <section className="mt-10 md:mt-12">
-          <div className="text-xs uppercase tracking-wider text-zinc-400">
+          <div className="text-xs uppercase tracking-wider text-zinc-500">
             How it works
           </div>
           <div className="mt-3 grid md:grid-cols-3 gap-4">
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+            <div className="rounded-2xl border border-black/10 bg-black/5 p-6">
               <div className="text-sm font-semibold">1) Take the test</div>
-              <p className="mt-2 text-sm text-zinc-300 leading-relaxed">
+              <p className="mt-2 text-sm text-zinc-700 leading-relaxed">
                 A focused 30-minute run. No going back. The format stays
                 consistent — your thinking is what changes.
               </p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+            <div className="rounded-2xl border border-black/10 bg-black/5 p-6">
               <div className="text-sm font-semibold">2) Get a preview</div>
-              <p className="mt-2 text-sm text-zinc-300 leading-relaxed">
+              <p className="mt-2 text-sm text-zinc-700 leading-relaxed">
                 You’ll see a broad range + a teaser profile. Enough to feel it…
                 not enough to reverse-engineer it.
               </p>
             </div>
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-6">
+            <div className="rounded-2xl border border-black/10 bg-black/5 p-6">
               <div className="text-sm font-semibold">3) Unlock the report</div>
-              <p className="mt-2 text-sm text-zinc-300 leading-relaxed">
+              <p className="mt-2 text-sm text-zinc-700 leading-relaxed">
                 Exact estimate, raw/weighted score, strengths vs limitations,
                 and a profile summary that feels personal.
               </p>
@@ -136,22 +136,22 @@ export default function HomePage() {
         </section>
 
         {/* Footer (clean + centered) */}
-        <footer className="mt-12 md:mt-16 border-t border-white/10 pt-8">
+        <footer className="mt-12 md:mt-16 border-t border-black/10 pt-8">
           <div className="mx-auto max-w-[980px] text-center">
-            <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-xs text-zinc-400">
-              <Link href="/privacy" className="hover:text-zinc-200 transition-colors">
+            <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-xs text-zinc-600">
+              <Link href="/privacy" className="hover:text-zinc-900 transition-colors">
                 Privacy Policy
               </Link>
-              <span className="text-zinc-700">·</span>
-              <Link href="/terms" className="hover:text-zinc-200 transition-colors">
+              <span className="text-zinc-400">·</span>
+              <Link href="/terms" className="hover:text-zinc-900 transition-colors">
                 Terms
               </Link>
-              <span className="text-zinc-700">·</span>
-              <Link href="/refunds" className="hover:text-zinc-200 transition-colors">
+              <span className="text-zinc-400">·</span>
+              <Link href="/refunds" className="hover:text-zinc-900 transition-colors">
                 Refund Policy
               </Link>
-              <span className="text-zinc-700">·</span>
-              <Link href="/contact" className="hover:text-zinc-200 transition-colors">
+              <span className="text-zinc-400">·</span>
+              <Link href="/contact" className="hover:text-zinc-900 transition-colors">
                 Contact
               </Link>
             </div>
@@ -161,7 +161,7 @@ export default function HomePage() {
               clinical diagnosis.
             </div>
 
-            <div className="mt-3 text-xs text-zinc-600">
+            <div className="mt-3 text-xs text-zinc-500">
               © {new Date().getFullYear()} IQ Assessment
             </div>
           </div>
