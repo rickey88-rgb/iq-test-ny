@@ -245,7 +245,7 @@ export const QUESTIONS: Question[] = [
     type: "mc",
     domain: "numeric",
     prompt:
-      "Choose one:\nA) 1,000,000 kr today\nB) 1 kr doubled every day for 20 days\n\nWhich is worth more?",
+      "Choose one:\nA) $1,000,000 today\nB) $1 doubled every day for 20 days\n\nWhich is worth more?",
     options: ["A", "B", "They are equal", "Cannot be determined"],
     correctIndex: 1,
   },
