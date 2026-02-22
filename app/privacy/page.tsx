@@ -57,7 +57,7 @@ export default function PrivacyPolicy() {
       <h2>7. Contact</h2>
       <p>
         For privacy-related questions, please contact us at:
-        support@yourdomain.com
+        support@unlockyouriq.com
       </p>
     </main>
   );

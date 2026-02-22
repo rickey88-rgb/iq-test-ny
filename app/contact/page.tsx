@@ -9,7 +9,7 @@ export default function Contact() {
       </p>
 
       <h2>Email</h2>
-      <p>support@yourdomain.com</p>
+      <p>support@unlockyouriq.com</p>
 
       <h2>Response time</h2>
       <p>

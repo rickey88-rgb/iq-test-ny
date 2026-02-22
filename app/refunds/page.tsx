@@ -26,7 +26,7 @@ export default function RefundPolicy() {
       <h2>4. Contact</h2>
       <p>
         For refund-related questions, please contact:
-        support@yourdomain.com
+        support@unlockyouriq.com
       </p>
     </main>
   );

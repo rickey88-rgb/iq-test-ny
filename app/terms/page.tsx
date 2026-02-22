@@ -56,7 +56,7 @@ export default function Terms() {
       <h2>8. Contact</h2>
       <p>
         If you have questions regarding these Terms, please contact:
-        support@yourdomain.com
+        support@unlockyouriq.com
       </p>
     </main>
   );
