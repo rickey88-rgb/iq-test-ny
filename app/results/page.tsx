@@ -263,7 +263,7 @@ const unlock = () => {
 
   // Redirect to Stripe
   window.location.href =
-    "https://buy.stripe.com/6oU5kC90Zd2Fgp1a2Y0gw03";
+    "https://buy.stripe.com/dRmcN490Z5AdegT1ws0gw04";
 };
 
   const copySnippet = async () => {
