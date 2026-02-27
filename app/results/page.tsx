@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Card, PrimaryButton, GhostButton } from "@/components/ui";
 import { buildFullResult, DISCLAIMER } from "@/lib/scoring";
-import { loadState, saveState, setUnlocked, isUnlocked } from "@/lib/storage";
+import { loadState, saveState, isUnlocked } from "@/lib/storage";
 
 function clamp(n: number, a: number, b: number) {
   return Math.max(a, Math.min(b, n));
@@ -203,33 +203,39 @@ function RadarChart({
 
 export default function ResultsPage() {
   const [unlocked, setUnlockedState] = useState(false);
- // Track reach_paywall
+
+  // Pricing / trust copy (single source of truth)
+  const PRICE_TEXT = "$6.99";
+  const STRIPE_VENDOR = "Stripe";
+
+  // Track reach_paywall
   useEffect(() => {
-    if (typeof window !== "undefined" && window.gtag) {
-      window.gtag("event", "reach_paywall");
+    if (typeof window !== "undefined" && (window as any).gtag) {
+      (window as any).gtag("event", "reach_paywall");
     }
   }, []);
+
   useEffect(() => {
     setUnlockedState(isUnlocked());
   }, []);
 
- const state = useMemo(() => loadState(), []);
+  const state = useMemo(() => loadState(), []);
 
-const result = useMemo(() => {
-  if (!state) return null;
-  if (state.result) return state.result;
-  return buildFullResult(state.answers, state.anti);
-}, [state]);
+  const result = useMemo(() => {
+    if (!state) return null;
+    if (state.result) return state.result;
+    return buildFullResult(state.answers, state.anti);
+  }, [state]);
 
-useEffect(() => {
-  if (!state) return;
-  if (!result) return;
-  if (state.result) return;
-  saveState({ ...state, result });
-}, [state, result]);
+  useEffect(() => {
+    if (!state) return;
+    if (!result) return;
+    if (state.result) return;
+    saveState({ ...state, result });
+  }, [state, result]);
 
-if (!result) {
-  return (
+  if (!result) {
+    return (
       <main className="min-h-screen">
         <div className="mx-auto max-w-test px-4 md:px-6 py-10">
           <Card className="p-6">
@@ -247,24 +253,23 @@ if (!result) {
   }
 
   // ✅ Send user to Stripe Payment Link instead of unlocking locally
-const unlock = () => {
-  // Track click_reveal
-  if (typeof window !== "undefined" && window.gtag) {
-    window.gtag("event", "click_reveal", {
-      transport_type: "beacon",
-    });
-  }
+  const unlock = () => {
+    // Track click_reveal
+    if (typeof window !== "undefined" && (window as any).gtag) {
+      (window as any).gtag("event", "click_reveal", {
+        transport_type: "beacon",
+      });
+    }
 
-  // 🔒 Force persist current state before leaving page (important for Stripe redirect)
-  const currentState = loadState();
-  if (currentState) {
-    saveState(currentState);
-  }
+    // 🔒 Force persist current state before leaving page (important for Stripe redirect)
+    const currentState = loadState();
+    if (currentState) {
+      saveState(currentState);
+    }
 
-  // Redirect to Stripe
-  window.location.href =
-    "https://buy.stripe.com/dRmcN490Z5AdegT1ws0gw04";
-};
+    // Redirect to Stripe
+    window.location.href = "https://buy.stripe.com/dRmcN490Z5AdegT1ws0gw04";
+  };
 
   const copySnippet = async () => {
     try {
@@ -380,17 +385,49 @@ const unlock = () => {
                 <li>• Your full visual cognitive profile</li>
               </ul>
 
-              <div className="mt-4 text-xs text-zinc-500">The exact estimate remains hidden until unlocked.</div>
+              <div className="mt-4 text-xs text-zinc-500">
+                The exact estimate remains hidden until unlocked.
+              </div>
+              <div className="mt-1 text-xs text-zinc-500">
+                One-time purchase. No recurring charges.
+              </div>
             </div>
 
-            <div className="mt-6 flex flex-wrap gap-3 items-center">
-              <PrimaryButton
-  onClick={unlock}
-  className="bg-green-600 hover:bg-green-700 text-white"
->
-  Reveal exact result
-</PrimaryButton>
-              <div className="text-sm text-zinc-500">Exact estimate stays locked.</div>
+            {/* ✅ Trust + price clarity (NEW) */}
+            <div className="mt-6 rounded-xl border border-black/10 bg-white/60 p-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <div className="text-sm font-semibold text-zinc-900">Unlock your exact result</div>
+                  <div className="mt-1 text-xs text-zinc-500">
+                    One-time payment of <span className="font-semibold text-zinc-800">{PRICE_TEXT}</span> · No
+                    subscription
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 text-xs text-zinc-500">
+                  <span className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-3 py-1">
+                    🔒 Secure checkout
+                  </span>
+                  <span className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-3 py-1">
+                    ⚡ Instant access
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-4 flex flex-wrap gap-3 items-center">
+                <PrimaryButton
+                  onClick={unlock}
+                  className="bg-green-600 hover:bg-green-700 text-white"
+                >
+                  Unlock exact result — {PRICE_TEXT}
+                </PrimaryButton>
+
+                <div className="text-sm text-zinc-500">Exact estimate stays locked.</div>
+              </div>
+
+              <div className="mt-3 text-xs text-zinc-500">
+                Powered by {STRIPE_VENDOR}. One-time charge only — no recurring billing, no membership.
+              </div>
             </div>
 
             <div className="mt-6 text-xs text-zinc-400">{DISCLAIMER}</div>

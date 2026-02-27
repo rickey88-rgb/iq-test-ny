@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Card, PrimaryButton } from "@/components/ui";
 import StartTestCta from "@/components/StartTestCta";
+
 function Stat({ k, v }: { k: string; v: string }) {
   return (
     <div className="rounded-2xl border border-black/10 bg-black/5 px-4 py-3">
@@ -26,35 +27,32 @@ export default function HomePage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="text-xs uppercase tracking-wider text-zinc-500">
-            IQ Assessment
+            Precision IQ Assessment
           </div>
-          <div className="text-xs text-zinc-500">
-            Anti-Cheat Systems · Controlled Conditions
-          </div>
+          <div className="text-xs text-zinc-500">Controlled Conditions</div>
         </div>
 
         {/* Hero */}
         <section className="mt-10 md:mt-14">
           <div className="max-w-[900px]">
             <h1 className="mt-4 text-4xl md:text-6xl font-semibold leading-[1.02]">
-              Most people think they’re above average.{" "}
-              <span className="text-zinc-600">Statistically, you aren’t..</span>
+              Get Your Exact IQ Score.{" "}
+              <span className="text-zinc-600">Systematically calculated.</span>
             </h1>
 
             <p className="mt-4 max-w-[760px] text-zinc-700 text-[15px] md:text-[18px] leading-relaxed">
-              40 questions. 30 minutes. No backtracking. Built to feel like an
-              exam — clean UI, controlled pressure, and results that feel
-              uncomfortably specific.
+              Scientifically structured. Timed. Weighted across eight cognitive
+              domains for maximum accuracy. 40 questions in a controlled session
             </p>
 
             {/* CTA (mobile: stacked, desktop: inline) */}
             <div className="mt-7 flex w-full flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
-             <div className="w-full sm:w-auto">
-  <StartTestCta />
-</div>
+              <div className="w-full sm:w-auto">
+                <StartTestCta />
+              </div>
 
               <div className="text-sm text-zinc-600 sm:text-left">
-                Starting the test initiates the timed session.
+                Starting the assessment initiates the timed session.
               </div>
             </div>
 
@@ -62,7 +60,7 @@ export default function HomePage() {
               <Stat k="Questions" v="40 total" />
               <Stat k="Time limit" v="30:00" />
               <Stat k="Backtracking" v="Disabled" />
-              <Stat k="Report" v="Exact IQ (estimate)" />
+              <Stat k="Report" v="Exact IQ Score" />
             </div>
 
             <div className="mt-5 text-xs text-zinc-500">
@@ -75,32 +73,227 @@ export default function HomePage() {
         {/* Value props */}
         <section className="mt-10 md:mt-12 grid md:grid-cols-3 gap-4">
           <Card className="p-6 !bg-black/5 !border-black/10 !shadow-none">
-            <div className="text-sm font-semibold text-zinc-900">What you get</div>
+            <div className="text-sm font-semibold text-zinc-900">
+              What you receive
+            </div>
             <ul className="mt-3 text-sm text-zinc-700 space-y-2">
-              <li>Exact IQ estimate</li>
-              <li>Raw score + weighted scoring</li>
-              <li>Strengths, limitations, profile summary</li>
-              <li>Shareable one-liner snippet</li>
+              <li>Exact IQ Score</li>
+              <li>Raw score + weighted scoring breakdown</li>
+              <li>Strengths, limitations, domain profile summary</li>
+              <li>Shareable one-line summary (optional)</li>
             </ul>
           </Card>
 
           <Card className="p-6 !bg-black/5 !border-black/10 !shadow-none">
             <div className="text-sm font-semibold text-zinc-900">
-              Pressure, by design
+              Timing is part of the measurement
             </div>
             <p className="mt-3 text-sm text-zinc-700 leading-relaxed">
-              The timer isn’t decoration. It’s part of the measurement — it
-              separates clear thinking from comfortable thinking.
+              The timer isn’t decoration. Processing speed and efficiency under
+              pressure are part of cognitive performance — and part of the final
+              scoring model.
             </p>
           </Card>
 
           <Card className="p-6 !bg-black/5 !border-black/10 !shadow-none">
-            <div className="text-sm font-semibold text-zinc-900">Built for trust</div>
+            <div className="text-sm font-semibold text-zinc-900">
+              Built for credibility
+            </div>
             <p className="mt-3 text-sm text-zinc-700 leading-relaxed">
-              No accounts. No fluff. Just a controlled assessment experience —
-              and a report that doesn’t feel generic.
+              No accounts. No gamified nonsense. Just a structured assessment
+              experience — and a report designed to avoid generic, copy-paste
+              results.
             </p>
           </Card>
+        </section>
+
+        {/* What it measures */}
+        <section className="mt-10 md:mt-12">
+          <div className="text-xs uppercase tracking-wider text-zinc-500">
+            What this assessment measures
+          </div>
+
+          <div className="mt-3 rounded-2xl border border-black/10 bg-black/5 p-6">
+            <p className="text-sm text-zinc-700 leading-relaxed">
+              This assessment evaluates eight core cognitive domains. Each
+              domain contributes to your final weighted IQ score.
+            </p>
+
+            <div className="mt-4 grid md:grid-cols-2 gap-3 text-sm text-zinc-700">
+              <div>
+                •{" "}
+                <span className="font-semibold text-zinc-900">
+                  Logical reasoning
+                </span>{" "}
+                — rule-based thinking and valid conclusions
+              </div>
+              <div>
+                •{" "}
+                <span className="font-semibold text-zinc-900">
+                  Pattern recognition
+                </span>{" "}
+                — detecting visual and abstract structure
+              </div>
+              <div>
+                •{" "}
+                <span className="font-semibold text-zinc-900">
+                  Numerical processing
+                </span>{" "}
+                — quantitative reasoning and number logic
+              </div>
+              <div>
+                •{" "}
+                <span className="font-semibold text-zinc-900">
+                  Verbal comprehension
+                </span>{" "}
+                — language-based analysis and interpretation
+              </div>
+              <div>
+                •{" "}
+                <span className="font-semibold text-zinc-900">
+                  Spatial analysis
+                </span>{" "}
+                — mental rotation and spatial structure
+              </div>
+              <div>
+                •{" "}
+                <span className="font-semibold text-zinc-900">
+                  Abstract reasoning
+                </span>{" "}
+                — non-verbal logic beyond memorized knowledge
+              </div>
+              <div>
+                •{" "}
+                <span className="font-semibold text-zinc-900">
+                  Working memory
+                </span>{" "}
+                — holding and manipulating information in real time
+              </div>
+              <div>
+                •{" "}
+                <span className="font-semibold text-zinc-900">
+                  Processing speed
+                </span>{" "}
+                — cognitive efficiency under timed constraints
+              </div>
+            </div>
+
+            <p className="mt-4 text-sm text-zinc-700 leading-relaxed">
+              The scoring model is weighted: more complex questions contribute
+              proportionally more to the final IQ Result.
+            </p>
+          </div>
+        </section>
+
+        {/* Accuracy by Design (NEW) */}
+        <section className="mt-10 md:mt-12">
+          <div className="text-xs uppercase tracking-wider text-zinc-500">
+            Accuracy by design
+          </div>
+
+          <div className="mt-3 rounded-2xl border border-black/10 bg-black/5 p-6">
+            <p className="text-sm text-zinc-700 leading-relaxed">
+              This assessment is structured using established cognitive
+              measurement principles.
+            </p>
+
+            <p className="mt-3 text-sm text-zinc-700 leading-relaxed">
+              Each question is calibrated within a progressive difficulty model.
+              As complexity increases, scoring weight increases proportionally.
+              This ensures that higher-level reasoning contributes more
+              significantly to the final IQ estimate.
+            </p>
+
+            <p className="mt-3 text-sm text-zinc-700 leading-relaxed">
+              The timed format is not decorative — it is a controlled variable.
+              Cognitive efficiency under time constraints forms part of the
+              evaluation.
+            </p>
+
+            <p className="mt-3 text-sm text-zinc-700 leading-relaxed">
+              Rather than generating a simple percentage score, performance is
+              converted through a weighted scoring model into a standardized IQ
+              estimate.
+            </p>
+
+            <p className="mt-3 text-sm text-zinc-700 leading-relaxed">
+              The goal is structured measurement — not entertainment.
+            </p>
+
+            <div className="mt-5 border-t border-black/10 pt-4">
+              <div className="text-sm font-semibold text-zinc-900">
+                Built Around Measurable Cognitive Domains
+              </div>
+              <p className="mt-2 text-sm text-zinc-700 leading-relaxed">
+                The assessment evaluates multiple domains including abstract
+                reasoning, pattern recognition, working memory, numerical logic,
+                and processing speed. Each domain contributes to a
+                domain-balanced composite score.
+              </p>
+              <p className="mt-2 text-sm text-zinc-700 leading-relaxed">
+                This multi-domain structure reduces reliance on a single skill
+                set and improves score stability.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* Theoretical Foundation (NEW) */}
+        <section className="mt-10 md:mt-12">
+          <div className="text-xs uppercase tracking-wider text-zinc-500">
+            Theoretical foundation
+          </div>
+
+          <div className="mt-3 rounded-2xl border border-black/10 bg-black/5 p-6">
+            <p className="text-sm text-zinc-700 leading-relaxed">
+              This assessment draws on established principles from non-verbal
+              intelligence measurement and matrix-based reasoning frameworks
+              commonly used in cognitive testing.
+            </p>
+
+            <p className="mt-3 text-sm text-zinc-700 leading-relaxed">
+              A significant portion of the assessment focuses on abstract
+              pattern recognition and rule detection — core components of fluid
+              intelligence.
+            </p>
+
+            <p className="mt-3 text-sm text-zinc-700 leading-relaxed">
+              Rather than measuring memorized knowledge, the emphasis is on:
+            </p>
+
+            <div className="mt-3 grid md:grid-cols-2 gap-3 text-sm text-zinc-700">
+              <div>• Identifying underlying structures</div>
+              <div>• Detecting logical progression</div>
+              <div>• Solving novel visual problems</div>
+              <div>• Reasoning independently of cultural background</div>
+            </div>
+
+            <p className="mt-4 text-sm text-zinc-700 leading-relaxed">
+              This approach reduces reliance on vocabulary or prior education
+              and instead emphasizes adaptive reasoning ability.
+            </p>
+          </div>
+        </section>
+
+        {/* Why Pattern-Based Reasoning Matters (NEW) */}
+        <section className="mt-10 md:mt-12">
+          <div className="text-xs uppercase tracking-wider text-zinc-500">
+            Why pattern-based reasoning matters
+          </div>
+
+          <div className="mt-3 rounded-2xl border border-black/10 bg-black/5 p-6">
+            <p className="text-sm text-zinc-700 leading-relaxed">
+              Pattern-based reasoning tasks are widely used in cognitive
+              evaluation because they minimize cultural and educational bias
+              while emphasizing structural logic recognition.
+            </p>
+
+            <p className="mt-3 text-sm text-zinc-700 leading-relaxed">
+              Performance on these tasks is strongly associated with fluid
+              intelligence — the ability to solve new problems without relying
+              on previously learned information.
+            </p>
+          </div>
         </section>
 
         {/* How it works */}
@@ -110,24 +303,26 @@ export default function HomePage() {
           </div>
           <div className="mt-3 grid md:grid-cols-3 gap-4">
             <div className="rounded-2xl border border-black/10 bg-black/5 p-6">
-              <div className="text-sm font-semibold">1) Take the test</div>
+              <div className="text-sm font-semibold">1) Take the assessment</div>
               <p className="mt-2 text-sm text-zinc-700 leading-relaxed">
-                A focused 30-minute run. No going back. The format stays
-                consistent — your thinking is what changes.
+                A focused 30-minute session with consistent format. No
+                backtracking — the goal is comparable performance under
+                controlled conditions.
               </p>
             </div>
             <div className="rounded-2xl border border-black/10 bg-black/5 p-6">
-              <div className="text-sm font-semibold">2) Get a preview</div>
+              <div className="text-sm font-semibold">2) View a preview</div>
               <p className="mt-2 text-sm text-zinc-700 leading-relaxed">
-                You’ll see a broad range + a teaser profile. Enough to feel it…
-                not enough to reverse-engineer it.
+                You’ll see a high-level classification and a brief teaser
+                profile. Enough to confirm direction — not enough to reveal the
+                final score.
               </p>
             </div>
             <div className="rounded-2xl border border-black/10 bg-black/5 p-6">
-              <div className="text-sm font-semibold">3) Unlock the report</div>
+              <div className="text-sm font-semibold">3) Unlock the full report</div>
               <p className="mt-2 text-sm text-zinc-700 leading-relaxed">
-                Exact estimate, raw/weighted score, strengths vs limitations,
-                and a profile summary that feels personal.
+                Your exact IQ estimate, raw vs weighted scoring, and a domain
+                breakdown with strengths and limitations.
               </p>
             </div>
           </div>
@@ -137,7 +332,10 @@ export default function HomePage() {
         <footer className="mt-12 md:mt-16 border-t border-black/10 pt-8">
           <div className="mx-auto max-w-[980px] text-center">
             <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 text-xs text-zinc-600">
-              <Link href="/privacy" className="hover:text-zinc-900 transition-colors">
+              <Link
+                href="/privacy"
+                className="hover:text-zinc-900 transition-colors"
+              >
                 Privacy Policy
               </Link>
               <span className="text-zinc-400">·</span>
@@ -145,11 +343,17 @@ export default function HomePage() {
                 Terms
               </Link>
               <span className="text-zinc-400">·</span>
-              <Link href="/refunds" className="hover:text-zinc-900 transition-colors">
+              <Link
+                href="/refunds"
+                className="hover:text-zinc-900 transition-colors"
+              >
                 Refund Policy
               </Link>
               <span className="text-zinc-400">·</span>
-              <Link href="/contact" className="hover:text-zinc-900 transition-colors">
+              <Link
+                href="/contact"
+                className="hover:text-zinc-900 transition-colors"
+              >
                 Contact
               </Link>
             </div>
