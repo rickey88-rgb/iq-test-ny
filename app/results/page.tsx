@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Card, PrimaryButton, GhostButton } from "@/components/ui";
 import { buildFullResult, DISCLAIMER } from "@/lib/scoring";
@@ -8,11 +8,6 @@ import { loadState, saveState, isUnlocked } from "@/lib/storage";
 
 function clamp(n: number, a: number, b: number) {
   return Math.max(a, Math.min(b, n));
-}
-
-function preZoneLabel(zone: string) {
-  // keep it broad & not back-calculable
-  return zone;
 }
 
 /** deterministic tiny hash → 0..1 (stable “jitter” so bars look alive without extra data) */
@@ -27,6 +22,29 @@ function hash01(input: string) {
 
 function percent01to100(n01: number) {
   return Math.round(clamp(n01, 0, 1) * 100);
+}
+
+function formatOneDecimal(n: number) {
+  return (Math.round(n * 10) / 10).toFixed(1);
+}
+
+// Approximate normal CDF for z (Abramowitz & Stegun style approximation)
+function normalCdf(z: number) {
+  const t = 1 / (1 + 0.2316419 * Math.abs(z));
+  const d = 0.3989423 * Math.exp((-z * z) / 2);
+  const p =
+    d *
+    t *
+    (0.3193815 +
+      t * (-0.3565638 + t * (1.781478 + t * (-1.821256 + t * 1.330274))));
+  const cdf = z >= 0 ? 1 - p : p;
+  return clamp(cdf, 0, 1);
+}
+
+function iqToPercentile(iq: number) {
+  // Classic IQ model: mean 100, sd 15
+  const z = (iq - 100) / 15;
+  return Math.round(normalCdf(z) * 100);
 }
 
 function ProgressRow({
@@ -76,7 +94,6 @@ function RadarChart({
 }: {
   metrics: Array<{ label: string; value01: number; color: "good" | "bad" }>;
 }) {
-  // Simple SVG radar chart (no deps)
   const size = 280;
   const cx = size / 2;
   const cy = size / 2;
@@ -88,7 +105,7 @@ function RadarChart({
   const rings = [0.25, 0.5, 0.75, 1.0];
 
   function point(i: number, value01: number) {
-    const a = -Math.PI / 2 + i * angleStep; // start at top
+    const a = -Math.PI / 2 + i * angleStep;
     const rr = r * clamp(value01, 0, 1);
     return { x: cx + Math.cos(a) * rr, y: cy + Math.sin(a) * rr };
   }
@@ -102,7 +119,7 @@ function RadarChart({
 
   const riskPoly = metrics
     .map((m, i) => {
-      const v = m.color === "bad" ? m.value01 : 0.18; // baseline for non-risk axes
+      const v = m.color === "bad" ? m.value01 : 0.18;
       const p = point(i, v);
       return `${p.x.toFixed(1)},${p.y.toFixed(1)}`;
     })
@@ -132,7 +149,6 @@ function RadarChart({
       <div className="mt-4 grid md:grid-cols-[320px_1fr] gap-6 items-center">
         <div className="rounded-2xl border border-black/10 bg-white/60 p-4">
           <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-            {/* rings */}
             {rings.map((k) => (
               <circle
                 key={k}
@@ -145,7 +161,6 @@ function RadarChart({
               />
             ))}
 
-            {/* axes */}
             {metrics.map((m, i) => {
               const a = -Math.PI / 2 + i * angleStep;
               const x2 = cx + Math.cos(a) * r;
@@ -163,7 +178,6 @@ function RadarChart({
               );
             })}
 
-            {/* good polygon */}
             <polygon
               points={goodPoly}
               fill="rgba(16,185,129,0.18)"
@@ -171,7 +185,6 @@ function RadarChart({
               strokeWidth="2"
             />
 
-            {/* risk polygon */}
             <polygon
               points={riskPoly}
               fill="rgba(239,68,68,0.10)"
@@ -180,7 +193,6 @@ function RadarChart({
               strokeDasharray="4 4"
             />
 
-            {/* dots */}
             {metrics.map((m, i) => {
               const p = point(i, m.value01);
               const fill = m.color === "bad" ? "rgb(239,68,68)" : "rgb(16,185,129)";
@@ -201,38 +213,376 @@ function RadarChart({
   );
 }
 
+function IQMeter({
+  iqValue,
+  locked,
+  animateOnMount = true,
+}: {
+  iqValue: number;
+  locked: boolean;
+  animateOnMount?: boolean;
+}) {
+  const MIN = 70;
+  const MAX = 145;
+  const ticks = [70, 85, 100, 115, 130, 145];
+
+  const iq = clamp(Number.isFinite(iqValue) ? iqValue : 100, MIN, MAX);
+  const targetPos = ((iq - MIN) / (MAX - MIN)) * 100;
+  const percentile = iqToPercentile(iq);
+
+  const [pos, setPos] = useState(0);
+
+  useEffect(() => {
+    // LOCKED: no targeting; sweep via CSS animation
+    if (locked) {
+      setPos(0);
+      return;
+    }
+
+    // UNLOCKED: animate to exact once
+    const startPos = animateOnMount ? 0 : targetPos;
+    setPos(startPos);
+
+    const raf = requestAnimationFrame(() => {
+      setPos(targetPos);
+    });
+
+    return () => cancelAnimationFrame(raf);
+  }, [locked, animateOnMount, targetPos]);
+
+  const averageIndex = Math.round(((100 - MIN) / (MAX - MIN)) * 25);
+
+  return (
+    <div className="mt-5 rounded-2xl border border-black/10 bg-white/75 p-5">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <div className="text-xs uppercase tracking-wider text-zinc-500">IQ meter</div>
+
+          <div className="mt-1 text-sm text-zinc-700">
+            {locked ? (
+              <>
+                Your exact IQ score has already been calculated —{" "}
+                <span className="font-medium text-zinc-900">it remains hidden.</span>
+              </>
+            ) : (
+              <>
+                Your estimated IQ:{" "}
+                <span className="font-semibold text-zinc-900">{formatOneDecimal(iq)}</span>{" "}
+                <span className="text-zinc-500">
+                  · Higher than approximately {percentile}% of the population
+                </span>
+              </>
+            )}
+          </div>
+        </div>
+
+        {locked ? (
+          <div className="text-xs text-zinc-500">Unlock to reveal the exact number</div>
+        ) : (
+          <div className="text-xs text-zinc-500 tabular-nums">
+            Scale: {MIN}–{MAX}
+          </div>
+        )}
+      </div>
+
+      <div className="mt-4">
+        <div className="relative">
+          {/* TRACK: strong zones + fill paint + sheen */}
+          <div className="relative h-3 rounded-full overflow-hidden border border-black/12 bg-zinc-100 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.03)]">
+            {/* base zone tint (stronger, always visible) */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "linear-gradient(90deg, rgba(56,189,248,0.44) 0%, rgba(56,189,248,0.26) 35%, rgba(251,191,36,0.26) 70%, rgba(251,191,36,0.44) 100%)",
+              }}
+            />
+
+            {/* sweep fill (paints with the marker) */}
+            <div
+              className="absolute left-0 top-0 h-full rounded-full"
+              style={
+                locked
+                  ? {
+                      width: "0%",
+                      background:
+                        "linear-gradient(90deg, rgba(56,189,248,0.75) 0%, rgba(56,189,248,0.42) 40%, rgba(251,191,36,0.48) 75%, rgba(251,191,36,0.80) 100%)",
+                      animation:
+                        "iqFill 3200ms cubic-bezier(0.16, 1, 0.3, 1) infinite",
+                      opacity: 0.95,
+                    }
+                  : {
+                      width: `${targetPos}%`,
+                      background:
+                        "linear-gradient(90deg, rgba(56,189,248,0.65) 0%, rgba(56,189,248,0.34) 40%, rgba(251,191,36,0.40) 75%, rgba(251,191,36,0.72) 100%)",
+                      transition: "width 1200ms cubic-bezier(0.16, 1, 0.3, 1)",
+                      opacity: 0.9,
+                    }
+              }
+            />
+
+            {/* sheen */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "linear-gradient(110deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.98) 45%, rgba(255,255,255,0) 60%)",
+                transform: "translateX(-120%)",
+                animation: "iqSheen 2.6s ease-in-out infinite",
+                opacity: 0.9,
+              }}
+            />
+          </div>
+
+          {/* Dense tick marks */}
+          <div className="pointer-events-none absolute inset-0 flex items-center">
+            {Array.from({ length: 26 }).map((_, i) => {
+              const x = (i / 25) * 100;
+              const isMajor = i % 5 === 0;
+              const isAverage = i === averageIndex;
+              return (
+                <div
+                  key={i}
+                  className="absolute"
+                  style={{ left: `${x}%`, transform: "translateX(-50%)" }}
+                >
+                  <div
+                    className={[
+                      "w-px",
+                      isMajor ? "h-4 bg-black/20" : "h-2 bg-black/14",
+                      isAverage ? "h-5 bg-black/30" : "",
+                    ].join(" ")}
+                  />
+                </div>
+              );
+            })}
+          </div>
+
+          {/* MARKER: sweep when locked, land when unlocked */}
+          <div
+            className="absolute top-1/2"
+            style={
+              locked
+                ? {
+                    left: "0%",
+                    transform: "translate(-50%, -50%)",
+                    animation:
+                      "iqSweep 3200ms cubic-bezier(0.16, 1, 0.3, 1) infinite",
+                  }
+                : {
+                    left: `${pos}%`,
+                    transform: "translate(-50%, -50%)",
+                    transition: "left 1200ms cubic-bezier(0.16, 1, 0.3, 1)",
+                  }
+            }
+          >
+            <div
+              className={[
+                "relative",
+                locked ? "filter blur-[7px]" : "",
+                locked
+                  ? "drop-shadow-[0_0px_32px_rgba(56,189,248,0.65)]"
+                  : "drop-shadow-[0_0px_20px_rgba(251,191,36,0.35)]",
+              ].join(" ")}
+            >
+              {/* Single arrow only (no outline arrow) */}
+              <div
+                className="mx-auto h-0 w-0 border-l-[11px] border-r-[11px] border-t-[16px] border-l-transparent border-r-transparent"
+                style={{
+                  borderTopColor: locked ? "rgb(56,189,248)" : "rgb(251,191,36)",
+                }}
+              />
+
+              {/* Number chip */}
+              <div className="mt-2 rounded-full border border-black/10 bg-white px-3 py-1 text-xs font-semibold text-zinc-900 shadow-sm tabular-nums">
+                {locked ? "—" : formatOneDecimal(iq)}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Tick labels */}
+        <div className="mt-3 flex items-center justify-between text-xs tabular-nums">
+          {ticks.map((t) => (
+            <div
+              key={t}
+              className={t === 100 ? "text-zinc-900 font-semibold" : "text-zinc-500"}
+            >
+              {t}
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-2 flex items-center justify-between text-[11px] text-zinc-500">
+          <span>Low</span>
+          <span>Below Average</span>
+          <span className="text-zinc-700 font-medium">Average</span>
+          <span>Above Average</span>
+          <span>Gifted</span>
+          <span>Genius</span>
+        </div>
+      </div>
+
+      <style jsx global>{`
+        @keyframes iqSheen {
+          0% {
+            transform: translateX(-120%);
+          }
+          55% {
+            transform: translateX(120%);
+          }
+          100% {
+            transform: translateX(120%);
+          }
+        }
+
+        @keyframes iqSweep {
+          0% {
+            left: 0%;
+          }
+          50% {
+            left: 100%;
+          }
+          100% {
+            left: 0%;
+          }
+        }
+
+        @keyframes iqFill {
+          0% {
+            width: 0%;
+          }
+          50% {
+            width: 100%;
+          }
+          100% {
+            width: 0%;
+          }
+        }
+      `}</style>
+    </div>
+  );
+}
+
 export default function ResultsPage() {
+  const [hydrated, setHydrated] = useState(false);
   const [unlocked, setUnlockedState] = useState(false);
+  const [state, setState] = useState<any>(null);
+  const [result, setResult] = useState<any>(null);
 
   // Pricing / trust copy (single source of truth)
   const PRICE_TEXT = "$6.99";
   const STRIPE_VENDOR = "Stripe";
 
-  // Track reach_paywall
   useEffect(() => {
+    const loadedState = loadState();
+    const unlockedNow = isUnlocked();
+
+    setUnlockedState(unlockedNow);
+    setState(loadedState);
+
+    if (loadedState) {
+      const builtResult = loadedState.result
+        ? loadedState.result
+        : buildFullResult(loadedState.answers, loadedState.anti);
+
+      setResult(builtResult);
+
+      if (!loadedState.result) {
+        saveState({ ...loadedState, result: builtResult });
+      }
+    }
+
+    // Track reach_paywall
     if (typeof window !== "undefined" && (window as any).gtag) {
       (window as any).gtag("event", "reach_paywall");
     }
+
+    setHydrated(true);
   }, []);
 
-  useEffect(() => {
-    setUnlockedState(isUnlocked());
-  }, []);
+  // --- Anti-cheat / session integrity (display-only, stable + non-accusatory) ---
+  const focusChanges = state?.anti?.focusChanges ?? 0;
+  const reloadedDuringSession = state?.anti?.reloadedDuringSession ?? false;
+  const interruptionCount = focusChanges + (reloadedDuringSession ? 2 : 0);
 
-  const state = useMemo(() => loadState(), []);
+  let integrityTitle = "Assessment conditions: Normal";
+  let integrityNote =
+    "No meaningful interruptions detected. Your result is comparable to a typical uninterrupted session.";
 
-  const result = useMemo(() => {
-    if (!state) return null;
-    if (state.result) return state.result;
-    return buildFullResult(state.answers, state.anti);
-  }, [state]);
+  if (interruptionCount >= 2 && interruptionCount <= 3) {
+    integrityTitle = "Assessment conditions: Minor interruptions";
+    integrityNote =
+      "A few brief interruptions were detected (e.g. tab switch, focus loss). This usually has minimal impact.";
+  } else if (interruptionCount >= 4) {
+    integrityTitle = "Assessment conditions: Interrupted session";
+    integrityNote =
+      "Several interruptions were detected. Your result may be slightly less comparable to a fully uninterrupted session.";
+  }
 
-  useEffect(() => {
-    if (!state) return;
-    if (!result) return;
-    if (state.result) return;
-    saveState({ ...state, result });
-  }, [state, result]);
+  const integrityDetailParts: string[] = [];
+  integrityDetailParts.push(`Focus changes: ${focusChanges}`);
+  integrityDetailParts.push(`Reload detected: ${reloadedDuringSession ? "Yes" : "No"}`);
+  const integrityDetails = integrityDetailParts.join(" · ");
+
+  // Confidence label + teaser (NO position leak)
+  let confidenceLabel = "High";
+  let confidenceDetail =
+    "Your exact IQ score is ready — it’s already calculated and securely locked.";
+
+  if (interruptionCount >= 4) {
+    confidenceLabel = "Medium";
+    confidenceDetail =
+      "Your exact IQ score is ready — it’s already calculated, but the session had several interruptions.";
+  } else if (interruptionCount >= 2) {
+    confidenceLabel = "High";
+    confidenceDetail =
+      "Your exact IQ score is ready — it’s already calculated and securely locked.";
+  } else {
+    confidenceLabel = "Very high";
+    confidenceDetail =
+      "Your exact IQ score is ready — it’s already calculated and securely locked.";
+  }
+
+  const unlock = () => {
+    // Track click_reveal
+    if (typeof window !== "undefined" && (window as any).gtag) {
+      (window as any).gtag("event", "click_reveal", {
+        transport_type: "beacon",
+      });
+    }
+
+    // Persist current state before leaving page (important for Stripe redirect)
+    const currentState = loadState();
+    if (currentState) {
+      saveState(currentState);
+    }
+
+    // Redirect to Stripe
+    window.location.href = "https://buy.stripe.com/dRmcN490Z5AdegT1ws0gw04";
+  };
+
+  const copySnippet = async () => {
+    try {
+      await navigator.clipboard.writeText(result.snippet);
+      alert("Copied");
+    } catch {
+      // ignore
+    }
+  };
+
+  if (!hydrated) {
+    return (
+      <main className="min-h-screen">
+        <div className="mx-auto max-w-test px-4 md:px-6 py-10">
+          <Card className="p-6">
+            <div className="text-lg font-semibold">Loading results...</div>
+            <p className="mt-2 text-sm text-zinc-600">Preparing your assessment report.</p>
+          </Card>
+        </div>
+      </main>
+    );
+  }
 
   if (!result) {
     return (
@@ -251,34 +601,6 @@ export default function ResultsPage() {
       </main>
     );
   }
-
-  // ✅ Send user to Stripe Payment Link instead of unlocking locally
-  const unlock = () => {
-    // Track click_reveal
-    if (typeof window !== "undefined" && (window as any).gtag) {
-      (window as any).gtag("event", "click_reveal", {
-        transport_type: "beacon",
-      });
-    }
-
-    // 🔒 Force persist current state before leaving page (important for Stripe redirect)
-    const currentState = loadState();
-    if (currentState) {
-      saveState(currentState);
-    }
-
-    // Redirect to Stripe
-    window.location.href = "https://buy.stripe.com/dRmcN490Z5AdegT1ws0gw04";
-  };
-
-  const copySnippet = async () => {
-    try {
-      await navigator.clipboard.writeText(result.snippet);
-      alert("Copied");
-    } catch {
-      // ignore
-    }
-  };
 
   // --- Visual scoring (NO change to your logic) ---
   const accuracy01 = clamp((result.correctCount ?? 0) / 40, 0, 1);
@@ -306,7 +628,7 @@ export default function ResultsPage() {
   ];
 
   function strengthValueForItem(text: string) {
-    const jitter = (hash01(text) - 0.5) * 0.1; // -0.05..+0.05
+    const jitter = (hash01(text) - 0.5) * 0.1;
     const base = clamp(0.62 + weighted01 * 0.3 + jitter, 0, 1);
     return Math.round(base * 100);
   }
@@ -316,32 +638,6 @@ export default function ResultsPage() {
     const base = clamp(0.25 + (1 - weighted01) * 0.35 + limitationLoad01 * 0.25 + jitter, 0, 1);
     return Math.round(base * 100);
   }
-
-  // --- Anti-cheat / session integrity (display-only, stable + non-accusatory) ---
-  const focusChanges = state?.anti?.focusChanges ?? 0;
-  const reloadedDuringSession = state?.anti?.reloadedDuringSession ?? false;
-
-  const interruptionCount = focusChanges + (reloadedDuringSession ? 2 : 0);
-
-  let integrityTitle = "Assessment conditions: Normal";
-  let integrityNote =
-    "No meaningful interruptions detected. Your result is comparable to a typical uninterrupted session.";
-
-  if (interruptionCount >= 2 && interruptionCount <= 3) {
-    integrityTitle = "Assessment conditions: Minor interruptions";
-    integrityNote =
-      "A few brief interruptions were detected (e.g. tab switch, focus loss). This usually has minimal impact.";
-  } else if (interruptionCount >= 4) {
-    integrityTitle = "Assessment conditions: Interrupted session";
-    integrityNote =
-      "Several interruptions were detected. Your result may be slightly less comparable to a fully uninterrupted session.";
-  }
-
-  const integrityDetailParts: string[] = [];
-  integrityDetailParts.push(`Focus changes: ${focusChanges}`);
-  if (reloadedDuringSession) integrityDetailParts.push("Reload detected: Yes");
-  else integrityDetailParts.push("Reload detected: No");
-  const integrityDetails = integrityDetailParts.join(" · ");
 
   return (
     <main className="min-h-screen">
@@ -359,10 +655,16 @@ export default function ResultsPage() {
         {/* Pre-paywall / preview */}
         {!unlocked && (
           <Card className="p-6 md:p-7">
-            <div className="text-sm text-zinc-500">Preliminary result</div>
-            <div className="mt-1 text-2xl font-semibold">{preZoneLabel(result.zone)}</div>
+            <div className="text-sm text-zinc-500">Preliminary report</div>
+            <div className="mt-1 text-2xl font-semibold">
+              Confidence level: {confidenceLabel}
+            </div>
+            <div className="mt-2 text-sm text-zinc-700 leading-relaxed max-w-[760px]">
+              {confidenceDetail}
+            </div>
 
-            {/* UPDATED: higher-curiosity preview */}
+            <IQMeter iqValue={Number(result.iq)} locked={true} animateOnMount={true} />
+
             <div className="mt-4 text-sm text-zinc-700 leading-relaxed max-w-[720px]">
               Most people stop at the label. That’s a mistake.
               <br />
@@ -388,19 +690,19 @@ export default function ResultsPage() {
               <div className="mt-4 text-xs text-zinc-500">
                 The exact estimate remains hidden until unlocked.
               </div>
-              <div className="mt-1 text-xs text-zinc-500">
-                One-time purchase. No recurring charges.
-              </div>
+              <div className="mt-1 text-xs text-zinc-500">One-time purchase. No recurring charges.</div>
             </div>
 
-            {/* ✅ Trust + price clarity (NEW) */}
+            {/* Trust + price + Apple/Google Pay */}
             <div className="mt-6 rounded-xl border border-black/10 bg-white/60 p-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <div className="text-sm font-semibold text-zinc-900">Unlock your exact result</div>
+                  <div className="text-sm font-semibold text-zinc-900">
+                    Your exact IQ score is ready
+                  </div>
                   <div className="mt-1 text-xs text-zinc-500">
-                    One-time payment of <span className="font-semibold text-zinc-800">{PRICE_TEXT}</span> · No
-                    subscription
+                    Reveal your exact number + full cognitive profile · One-time payment of{" "}
+                    <span className="font-semibold text-zinc-800">{PRICE_TEXT}</span> · No subscription
                   </div>
                 </div>
 
@@ -425,8 +727,24 @@ export default function ResultsPage() {
                 <div className="text-sm text-zinc-500">Exact estimate stays locked.</div>
               </div>
 
+              <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-zinc-600">
+                <span className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-3 py-1">
+                  <span className="text-base leading-none"></span>
+                  <span className="font-medium">Apple Pay</span>
+                </span>
+
+                <span className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-3 py-1">
+                  <span className="inline-flex h-4 w-4 items-center justify-center rounded-full bg-zinc-900 text-[10px] font-semibold text-white">
+                    G
+                  </span>
+                  <span className="font-medium">Google Pay</span>
+                </span>
+
+                <span className="text-zinc-500">Powered by {STRIPE_VENDOR}</span>
+              </div>
+
               <div className="mt-3 text-xs text-zinc-500">
-                Powered by {STRIPE_VENDOR}. One-time charge only — no recurring billing, no membership.
+                One-time charge only — no recurring billing, no membership.
               </div>
             </div>
 
@@ -438,8 +756,7 @@ export default function ResultsPage() {
         {unlocked && (
           <div className="grid gap-4">
             <Card className="p-6 md:p-7">
-              <div className="text-sm text-zinc-500">Estimated IQ</div>
-              <div className="mt-1 text-4xl md:text-5xl font-semibold">{result.iq}</div>
+              <IQMeter iqValue={Number(result.iq)} locked={false} animateOnMount={true} />
 
               <div className="mt-4 grid md:grid-cols-2 gap-4">
                 <div>
@@ -460,12 +777,10 @@ export default function ResultsPage() {
                 </div>
               </div>
 
-              {/* Radar + summary bars */}
               <div className="mt-6">
                 <RadarChart metrics={radarMetrics} />
               </div>
 
-              {/* Strengths + Limitations with colored bars */}
               <div className="mt-6 grid md:grid-cols-2 gap-6">
                 <div>
                   <div className="text-sm font-semibold">Key strengths</div>
@@ -535,8 +850,6 @@ export default function ResultsPage() {
             </Card>
           </div>
         )}
-
-        {/* ✅ Removed the MVP note at the bottom */}
       </div>
     </main>
   );
