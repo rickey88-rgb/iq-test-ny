@@ -41,6 +41,14 @@ export default function QuestionView({
   };
 
   const prompt = useMemo(() => {
+    const looksLikeSymbols = (s: string) => {
+  const t = s.replace(/\s+/g, "");
+  if (!t) return false;
+  // True om det inte finns bokstäver/siffror (dvs mest symboler)
+  return !/[A-Za-z0-9ÅÄÖåäö]/.test(t);
+};
+
+const isSymbolPrompt = looksLikeSymbols(prompt);
     if (question.type === "mc") return question.prompt;
     return question.questionText;
   }, [question]);
@@ -49,10 +57,16 @@ export default function QuestionView({
     <div className="w-full">
       {/* Question prompt */}
       <div className="mt-4 md:mt-6">
-        <div className="max-w-[720px] text-[20px] md:text-[22px] leading-snug font-medium text-zinc-900 whitespace-pre-line">
-          {prompt}
-        </div>
-      </div>
+       <div
+  className={[
+    "max-w-[720px] text-zinc-900 whitespace-pre-line",
+    isSymbolPrompt
+      ? "text-[28px] md:text-[34px] leading-[1.05] font-semibold"
+      : "text-[20px] md:text-[22px] leading-snug font-medium",
+  ].join(" ")}
+>
+  {prompt}
+</div>
 
       {/* Memory sequence block */}
       {isMemory && (

@@ -2,6 +2,13 @@
 
 import React from "react";
 
+function looksLikeSymbols(s: string) {
+  const t = s.replace(/\s+/g, "");
+  if (!t) return false;
+  // True om det inte finns bokstäver/siffror (dvs mest symboler)
+  return !/[A-Za-z0-9ÅÄÖåäö]/.test(t);
+}
+
 export default function Option({
   label,
   text,
@@ -15,6 +22,8 @@ export default function Option({
   onSelect: () => void;
   disabled?: boolean;
 }) {
+  const isSymbolText = looksLikeSymbols(text);
+
   return (
     <button
       type="button"
@@ -33,14 +42,22 @@ export default function Option({
       <div className="flex items-start gap-3">
         <div
           className={[
-            "mt-[2px] w-7 h-7 flex items-center justify-center rounded-md text-sm font-semibold",
+            "mt-[2px] w-8 h-8 md:w-8 md:h-8 flex items-center justify-center rounded-md text-sm font-semibold",
             selected ? "bg-zinc-900 text-zinc-50" : "bg-black/5 text-zinc-700",
           ].join(" ")}
           aria-hidden
         >
           {label}
         </div>
-        <div className="text-[15px] md:text-[15px] leading-snug text-zinc-900 whitespace-pre-line">
+
+        <div
+          className={[
+            "text-zinc-900 whitespace-pre-line",
+            isSymbolText
+              ? "text-[22px] md:text-[24px] leading-[1.05] font-semibold"
+              : "text-[15px] md:text-[15px] leading-snug",
+          ].join(" ")}
+        >
           {text}
         </div>
       </div>
