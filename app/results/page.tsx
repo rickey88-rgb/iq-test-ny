@@ -419,7 +419,10 @@ function IQMeter({
   <span className="text-center whitespace-nowrap">Below Avg</span>
   <span className="text-center whitespace-nowrap text-zinc-700 font-medium">Average</span>
   <span className="text-center whitespace-nowrap">Above Avg</span>
-  <span className="text-right whitespace-nowrap">Gifted&nbsp;Genius</span>
+  <span className="text-right whitespace-nowrap">
+  Gifted&nbsp;
+  <span className="text-zinc-700 font-medium text-[11px] md:text-sm">Genius</span>
+</span>
 </div>
       </div>
 
@@ -699,9 +702,8 @@ export default function ResultsPage() {
                     Your exact IQ score is ready
                   </div>
                   <div className="mt-1 text-xs text-zinc-500">
-                    Reveal your exact number + full cognitive profile ·
-                    <span className="font-semibold text-zinc-800">{PRICE_TEXT}</span> · No subscription
-                  </div>
+  Reveal your exact number + full cognitive profile · No subscription
+</div>
                 </div>
 
                 <div className="flex items-center gap-2 text-xs text-zinc-500">
@@ -726,7 +728,9 @@ export default function ResultsPage() {
                   Unlock your IQ
                 </button>
 
-                <div className="text-sm text-zinc-500">Exact estimate stays locked.</div>
+                <div className="text-sm text-zinc-500">
+  <span className="font-semibold text-zinc-800">{PRICE_TEXT}</span> One-time payment.
+</div>
               </div>
 
               <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-zinc-600">
