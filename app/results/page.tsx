@@ -287,7 +287,7 @@ function IQMeter({
         <div className="relative">
           {/* TRACK: strong zones + fill paint + sheen */}
           <div className="relative h-3 rounded-full overflow-hidden border border-black/12 bg-zinc-100 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.03)]">
-            {/* base zone tint (stronger, always visible) */}
+            {/* base zone tint */}
             <div
               className="absolute inset-0"
               style={{
@@ -356,7 +356,7 @@ function IQMeter({
             })}
           </div>
 
-          {/* MARKER: smooth ping-pong when locked, land when unlocked */}
+          {/* MARKER: sweep when locked, land when unlocked */}
           <div
             className="absolute top-1/2 transform-gpu will-change-transform"
             style={
@@ -377,13 +377,13 @@ function IQMeter({
             <div
               className={[
                 "relative",
-                // No blur pre-paywall (keep it crisp)
+                // ✅ no blur in locked mode
                 locked
                   ? "drop-shadow-[0_0px_26px_rgba(56,189,248,0.45)]"
                   : "drop-shadow-[0_0px_20px_rgba(251,191,36,0.35)]",
               ].join(" ")}
             >
-              {/* Arrow */}
+              {/* Arrow only */}
               <div
                 className="mx-auto h-0 w-0 border-l-[11px] border-r-[11px] border-t-[16px] border-l-transparent border-r-transparent"
                 style={{
@@ -391,10 +391,12 @@ function IQMeter({
                 }}
               />
 
-              {/* Number chip */}
-              <div className="mt-2 rounded-full border border-black/10 bg-white px-3 py-1 text-xs font-semibold text-zinc-900 shadow-sm tabular-nums">
-                {locked ? "—" : formatOneDecimal(iq)}
-              </div>
+              {/* ✅ Number chip ONLY after paywall */}
+              {!locked && (
+                <div className="mt-2 rounded-full border border-black/10 bg-white px-3 py-1 text-xs font-semibold text-zinc-900 shadow-sm tabular-nums">
+                  {formatOneDecimal(iq)}
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -411,13 +413,11 @@ function IQMeter({
           ))}
         </div>
 
-        {/* Segment labels (5 columns, no glued words on mobile) */}
-        <div className="mt-2 grid grid-cols-5 gap-2 text-[11px] md:text-xs leading-tight tracking-wide text-zinc-500">
+        {/* ✅ Segment labels: 5-col grid, no overlap, no glued words */}
+        <div className="mt-2 grid grid-cols-5 gap-2 text-[10px] md:text-xs leading-tight tracking-wide text-zinc-500">
           <span className="text-left whitespace-nowrap">Low</span>
           <span className="text-center whitespace-nowrap">Below Avg</span>
-          <span className="text-center whitespace-nowrap text-zinc-700 font-medium">
-            Average
-          </span>
+          <span className="text-center whitespace-nowrap text-zinc-700 font-medium">Average</span>
           <span className="text-center whitespace-nowrap">Above Avg</span>
           <span className="text-right whitespace-nowrap">Gifted&nbsp;Genius</span>
         </div>
@@ -436,7 +436,7 @@ function IQMeter({
           }
         }
 
-        /* Smooth back-and-forth, no "teleport" */
+        /* ✅ smooth ping-pong, no teleport */
         @keyframes iqSweep {
           0% {
             left: 0%;
@@ -446,7 +446,6 @@ function IQMeter({
           }
         }
 
-        /* Match sweep feel */
         @keyframes iqFill {
           0% {
             width: 0%;
@@ -705,7 +704,6 @@ export default function ResultsPage() {
                   </div>
                 </div>
 
-                {/* More standard trust chips (no emoji) */}
                 <div className="flex items-center gap-2 text-xs text-zinc-500">
                   <span className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-3 py-1">
                     <span className="h-2 w-2 rounded-full bg-emerald-500" />
@@ -718,13 +716,15 @@ export default function ResultsPage() {
                 </div>
               </div>
 
+              {/* ✅ Force-green by NOT using PrimaryButton here */}
               <div className="mt-4 flex flex-wrap gap-3 items-center">
-                <PrimaryButton
+                <button
+                  type="button"
                   onClick={unlock}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
+                  className="inline-flex items-center justify-center rounded-xl px-5 py-3 font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition-colors shadow-sm"
                 >
                   Unlock your IQ
-                </PrimaryButton>
+                </button>
 
                 <div className="text-sm text-zinc-500">Exact estimate stays locked.</div>
               </div>
@@ -758,7 +758,7 @@ export default function ResultsPage() {
         {unlocked && (
           <div className="grid gap-4">
             <Card className="p-6 md:p-7">
-              {/* Make the paid-for thing the hero */}
+              {/* ✅ Make exact IQ the hero */}
               <div className="flex flex-wrap items-end justify-between gap-4">
                 <div>
                   <div className="text-xs uppercase tracking-wider text-zinc-500">Exact result</div>
@@ -771,12 +771,9 @@ export default function ResultsPage() {
                   </div>
                 </div>
 
-                <div className="text-xs text-zinc-500 tabular-nums">
-                  Scale: 70–145
-                </div>
+                <div className="text-xs text-zinc-500 tabular-nums">Scale: 70–145</div>
               </div>
 
-              {/* Meter becomes a supporting visual */}
               <IQMeter iqValue={Number(result.iq)} locked={false} animateOnMount={true} />
 
               <div className="mt-4 grid md:grid-cols-2 gap-4">
@@ -854,9 +851,7 @@ export default function ResultsPage() {
               <div className="mt-6">
                 <div className="text-xs uppercase tracking-wider text-zinc-500">One-line summary</div>
                 <div className="mt-2 flex items-start gap-3">
-                  <div className="flex-1 text-sm text-zinc-800 whitespace-pre-line">
-                    {result.snippet}
-                  </div>
+                  <div className="flex-1 text-sm text-zinc-800 whitespace-pre-line">{result.snippet}</div>
                   <button
                     type="button"
                     className="rounded-lg border border-black/10 bg-white/70 px-3 py-2 hover:bg-black/5 transition-colors"
