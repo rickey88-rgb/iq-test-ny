@@ -56,16 +56,17 @@ const isSymbolPrompt = looksLikeSymbols(prompt);
   return (
     <div className="w-full">
       {/* Question prompt */}
-      <div className="mt-4 md:mt-6">
-       <div
-  className={[
-    "max-w-[720px] text-zinc-900 whitespace-pre-line",
-    isSymbolPrompt
-      ? "text-[28px] md:text-[34px] leading-[1.05] font-semibold"
-      : "text-[20px] md:text-[22px] leading-snug font-medium",
-  ].join(" ")}
->
-  {prompt}
+<div className="mt-4 md:mt-6">
+  <div
+    className={
+      "max-w-[720px] text-zinc-900 whitespace-pre-line " +
+      (isSymbolPrompt
+        ? "text-[28px] md:text-[34px] leading-[1.05] font-semibold"
+        : "text-[20px] md:text-[22px] leading-snug font-medium")
+    }
+  >
+    {prompt}
+  </div>
 </div>
 
       {/* Memory sequence block */}
