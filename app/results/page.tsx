@@ -266,11 +266,9 @@ function IQMeter({
               </>
             ) : (
               <>
-                Your estimated IQ:{" "}
-                <span className="font-semibold text-zinc-900">{formatOneDecimal(iq)}</span>{" "}
-                <span className="text-zinc-500">
-                  · Higher than approximately {percentile}% of the population
-                </span>
+                Higher than approximately{" "}
+                <span className="font-semibold text-zinc-900">{percentile}%</span> of the
+                population
               </>
             )}
           </div>
@@ -308,7 +306,7 @@ function IQMeter({
                       background:
                         "linear-gradient(90deg, rgba(56,189,248,0.75) 0%, rgba(56,189,248,0.42) 40%, rgba(251,191,36,0.48) 75%, rgba(251,191,36,0.80) 100%)",
                       animation:
-                        "iqFill 3200ms cubic-bezier(0.16, 1, 0.3, 1) infinite",
+                        "iqFill 3600ms cubic-bezier(0.16, 1, 0.3, 1) infinite alternate",
                       opacity: 0.95,
                     }
                   : {
@@ -328,7 +326,7 @@ function IQMeter({
                 background:
                   "linear-gradient(110deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.98) 45%, rgba(255,255,255,0) 60%)",
                 transform: "translateX(-120%)",
-                animation: "iqSheen 2.6s ease-in-out infinite",
+                animation: "iqSheen 2.8s ease-in-out infinite",
                 opacity: 0.9,
               }}
             />
@@ -358,16 +356,16 @@ function IQMeter({
             })}
           </div>
 
-          {/* MARKER: sweep when locked, land when unlocked */}
+          {/* MARKER: smooth ping-pong when locked, land when unlocked */}
           <div
-            className="absolute top-1/2"
+            className="absolute top-1/2 transform-gpu will-change-transform"
             style={
               locked
                 ? {
                     left: "0%",
                     transform: "translate(-50%, -50%)",
                     animation:
-                      "iqSweep 3200ms cubic-bezier(0.16, 1, 0.3, 1) infinite",
+                      "iqSweep 3600ms cubic-bezier(0.16, 1, 0.3, 1) infinite alternate",
                   }
                 : {
                     left: `${pos}%`,
@@ -379,13 +377,13 @@ function IQMeter({
             <div
               className={[
                 "relative",
-                locked ? "filter blur-[7px]" : "",
+                // No blur pre-paywall (keep it crisp)
                 locked
-                  ? "drop-shadow-[0_0px_32px_rgba(56,189,248,0.65)]"
+                  ? "drop-shadow-[0_0px_26px_rgba(56,189,248,0.45)]"
                   : "drop-shadow-[0_0px_20px_rgba(251,191,36,0.35)]",
               ].join(" ")}
             >
-              {/* Single arrow only (no outline arrow) */}
+              {/* Arrow */}
               <div
                 className="mx-auto h-0 w-0 border-l-[11px] border-r-[11px] border-t-[16px] border-l-transparent border-r-transparent"
                 style={{
@@ -413,13 +411,15 @@ function IQMeter({
           ))}
         </div>
 
-        <div className="mt-2 flex items-center justify-between text-[11px] text-zinc-500">
-          <span>Low</span>
-          <span>Below Average</span>
-          <span className="text-zinc-700 font-medium">Average</span>
-          <span>Above Average</span>
-          <span>Gifted</span>
-          <span>Genius</span>
+        {/* Segment labels (5 columns, no glued words on mobile) */}
+        <div className="mt-2 grid grid-cols-5 gap-2 text-[11px] md:text-xs leading-tight tracking-wide text-zinc-500">
+          <span className="text-left whitespace-nowrap">Low</span>
+          <span className="text-center whitespace-nowrap">Below Avg</span>
+          <span className="text-center whitespace-nowrap text-zinc-700 font-medium">
+            Average
+          </span>
+          <span className="text-center whitespace-nowrap">Above Avg</span>
+          <span className="text-right whitespace-nowrap">Gifted&nbsp;Genius</span>
         </div>
       </div>
 
@@ -436,27 +436,23 @@ function IQMeter({
           }
         }
 
+        /* Smooth back-and-forth, no "teleport" */
         @keyframes iqSweep {
           0% {
             left: 0%;
           }
-          50% {
-            left: 100%;
-          }
           100% {
-            left: 0%;
+            left: 100%;
           }
         }
 
+        /* Match sweep feel */
         @keyframes iqFill {
           0% {
             width: 0%;
           }
-          50% {
-            width: 100%;
-          }
           100% {
-            width: 0%;
+            width: 100%;
           }
         }
       `}</style>
@@ -639,6 +635,9 @@ export default function ResultsPage() {
     return Math.round(base * 100);
   }
 
+  const exactIq = Number(result.iq);
+  const exactPercentile = iqToPercentile(exactIq);
+
   return (
     <main className="min-h-screen">
       <div className="mx-auto max-w-test px-4 md:px-6 py-10">
@@ -706,12 +705,15 @@ export default function ResultsPage() {
                   </div>
                 </div>
 
+                {/* More standard trust chips (no emoji) */}
                 <div className="flex items-center gap-2 text-xs text-zinc-500">
                   <span className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-3 py-1">
-                    🔒 Secure checkout
+                    <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                    Secure checkout
                   </span>
                   <span className="inline-flex items-center gap-2 rounded-full border border-black/10 bg-white px-3 py-1">
-                    ⚡ Instant access
+                    <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                    Instant access
                   </span>
                 </div>
               </div>
@@ -719,9 +721,9 @@ export default function ResultsPage() {
               <div className="mt-4 flex flex-wrap gap-3 items-center">
                 <PrimaryButton
                   onClick={unlock}
-                  className="bg-green-600 hover:bg-green-700 text-white"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white"
                 >
-                  Unlock exact result — {PRICE_TEXT}
+                  Unlock your IQ
                 </PrimaryButton>
 
                 <div className="text-sm text-zinc-500">Exact estimate stays locked.</div>
@@ -756,6 +758,25 @@ export default function ResultsPage() {
         {unlocked && (
           <div className="grid gap-4">
             <Card className="p-6 md:p-7">
+              {/* Make the paid-for thing the hero */}
+              <div className="flex flex-wrap items-end justify-between gap-4">
+                <div>
+                  <div className="text-xs uppercase tracking-wider text-zinc-500">Exact result</div>
+                  <div className="mt-1 text-5xl md:text-6xl font-semibold text-zinc-900 tabular-nums">
+                    IQ {formatOneDecimal(exactIq)}
+                  </div>
+                  <div className="mt-2 text-sm text-zinc-600">
+                    Higher than approximately{" "}
+                    <span className="font-semibold text-zinc-900">{exactPercentile}%</span> of the population
+                  </div>
+                </div>
+
+                <div className="text-xs text-zinc-500 tabular-nums">
+                  Scale: 70–145
+                </div>
+              </div>
+
+              {/* Meter becomes a supporting visual */}
               <IQMeter iqValue={Number(result.iq)} locked={false} animateOnMount={true} />
 
               <div className="mt-4 grid md:grid-cols-2 gap-4">
@@ -833,7 +854,9 @@ export default function ResultsPage() {
               <div className="mt-6">
                 <div className="text-xs uppercase tracking-wider text-zinc-500">One-line summary</div>
                 <div className="mt-2 flex items-start gap-3">
-                  <div className="flex-1 text-sm text-zinc-800 whitespace-pre-line">{result.snippet}</div>
+                  <div className="flex-1 text-sm text-zinc-800 whitespace-pre-line">
+                    {result.snippet}
+                  </div>
                   <button
                     type="button"
                     className="rounded-lg border border-black/10 bg-white/70 px-3 py-2 hover:bg-black/5 transition-colors"
