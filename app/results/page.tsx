@@ -414,13 +414,13 @@ function IQMeter({
         </div>
 
         {/* ✅ Segment labels: 5-col grid, no overlap, no glued words */}
-        <div className="mt-2 grid grid-cols-5 gap-2 text-[10px] md:text-xs leading-tight tracking-wide text-zinc-500">
-          <span className="text-left whitespace-nowrap">Low</span>
-          <span className="text-center whitespace-nowrap">Below Avg</span>
-          <span className="text-center whitespace-nowrap text-zinc-700 font-medium">Average</span>
-          <span className="text-center whitespace-nowrap">Above Avg</span>
-          <span className="text-right whitespace-nowrap">Gifted&nbsp;Genius</span>
-        </div>
+        <div className="mt-2 grid grid-cols-[1fr_1fr_1fr_1fr_1.35fr] gap-2 text-[10px] md:text-xs leading-tight tracking-wide text-zinc-500">
+  <span className="text-left whitespace-nowrap">Low</span>
+  <span className="text-center whitespace-nowrap">Below Avg</span>
+  <span className="text-center whitespace-nowrap text-zinc-700 font-medium">Average</span>
+  <span className="text-center whitespace-nowrap">Above Avg</span>
+  <span className="text-right whitespace-nowrap">Gifted&nbsp;Genius</span>
+</div>
       </div>
 
       <style jsx global>{`
@@ -679,7 +679,7 @@ export default function ResultsPage() {
 
               <ul className="mt-4 text-sm text-zinc-700 space-y-3">
                 <li>• Your exact IQ estimate</li>
-                <li>• The weighted score that shifted your result</li>
+                <li>• Exact percentile</li>
                 <li>• The strongest cognitive signal detected</li>
                 <li>• The one limitation that influenced your final number</li>
                 <li>• Your full visual cognitive profile</li>
