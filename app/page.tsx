@@ -35,9 +35,9 @@ export default function HomePage() {
         {/* Hero */}
         <section className="mt-10 md:mt-14">
           <div className="max-w-[900px]">
-            <h1 className="mt-4 text-4xl md:text-6xl font-semibold leading-[1.02]">
-  What is your IQ?{" "}
-  <span className="block md:inline text-zinc-500 text-3xl md:text-5xl font-normal">
+           <h1 className="mt-4 text-[2.7rem] md:text-6xl font-semibold leading-[1.02]">
+  What is your IQ?
+  <span className="block text-zinc-500 text-3xl md:text-5xl font-normal">
     Accurate test. Exact results.
   </span>
 </h1>
