@@ -57,18 +57,23 @@ export default function QuestionView({
   return (
     <div className="w-full">
       {/* Question prompt */}
-      <div className="mt-4 md:mt-6">
-        <div
-          className={
-            "max-w-[720px] text-zinc-900 whitespace-pre-line " +
-            (isSymbolPrompt
-              ? "text-[28px] md:text-[34px] leading-[1.05] font-semibold"
-              : "text-[20px] md:text-[22px] leading-snug font-medium")
-          }
-        >
-          {prompt}
-        </div>
+<div className="mt-4 md:mt-6">
+  {isSymbolPrompt ? (
+    <div className="max-w-[720px] text-zinc-900">
+      <div className="flex flex-nowrap items-center gap-3 md:gap-4 overflow-x-auto whitespace-nowrap pb-1 text-[28px] md:text-[34px] leading-[1.05] font-semibold">
+        {prompt.split("\n").map((line, idx) => (
+          <span key={idx} className={idx === 0 ? "" : "ml-0"}>
+            {line}
+          </span>
+        ))}
       </div>
+    </div>
+  ) : (
+    <div className="max-w-[720px] text-zinc-900 whitespace-pre-line text-[20px] md:text-[22px] leading-snug font-medium">
+      {prompt}
+    </div>
+  )}
+</div>
 
       {/* Memory sequence block */}
       {isMemory && (
