@@ -36,8 +36,8 @@ export default function HomePage() {
         <section className="mt-10 md:mt-14">
           <div className="max-w-[900px]">
             <h1 className="mt-4 text-4xl md:text-6xl font-semibold leading-[1.02]">
-              Get Your Exact IQ Score.{" "}
-              <span className="text-zinc-600">Systematically calculated.</span>
+              What is your IQ?{" "}
+              <span className="text-zinc-600">An accurate IQ test that calculates your exact score.</span>
             </h1>
 
             <p className="mt-4 max-w-[760px] text-zinc-700 text-[15px] md:text-[18px] leading-relaxed">
