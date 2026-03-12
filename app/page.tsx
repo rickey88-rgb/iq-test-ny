@@ -38,7 +38,7 @@ export default function HomePage() {
            <h1 className="mt-4 text-[2.7rem] md:text-6xl font-semibold leading-[1.02]">
   What is your IQ?
   <span className="block text-zinc-500 text-3xl md:text-5xl font-normal">
-    Accurate test. Exact results.
+    Accurate test. Exact results...
   </span>
 </h1>
 
