@@ -652,7 +652,7 @@ export default function ResultsPage() {
 
         {/* Pre-paywall / preview */}
         {!unlocked && (
-          <Card className="p-6 md:p-7">
+          <Card className="p-4 md:p-7">
             <div className="text-sm text-zinc-500">Preliminary report</div>
             <div className="mt-1 text-2xl font-semibold">
               Confidence level: {confidenceLabel}
@@ -757,7 +757,7 @@ export default function ResultsPage() {
         {/* Post-paywall */}
         {unlocked && (
           <div className="grid gap-4">
-            <Card className="p-6 md:p-7">
+            <Card className="p-4 md:p-7">
               {/* ✅ Make exact IQ the hero */}
               <div className="flex flex-wrap items-end justify-between gap-4">
                 <div>
@@ -842,7 +842,7 @@ export default function ResultsPage() {
               </div>
             </Card>
 
-            <Card className="p-6 md:p-7">
+            <Card className="p-4 md:p-7">
               <div className="text-sm font-semibold">Cognitive Profile Summary</div>
               <div className="mt-3 text-sm text-zinc-700 leading-relaxed whitespace-pre-line max-w-[820px]">
                 {result.profileSummary}
