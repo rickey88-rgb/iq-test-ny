@@ -688,10 +688,7 @@ export default function ResultsPage() {
                 <li>• Your full visual cognitive profile</li>
               </ul>
 
-              <div className="mt-4 text-xs text-zinc-500">
-                $6.99 One-time Payment.
-              </div>
-              <div className="mt-1 text-xs text-zinc-500">One-time purchase. No recurring charges.</div>
+              
             </div>
 
             {/* Trust + price + Apple/Google Pay */}
