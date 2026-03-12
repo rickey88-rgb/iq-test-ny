@@ -686,7 +686,7 @@ export default function ResultsPage() {
               </ul>
 
               <div className="mt-4 text-xs text-zinc-500">
-                The exact estimate remains hidden until unlocked.
+                $6.99 One-time Payment.
               </div>
               <div className="mt-1 text-xs text-zinc-500">One-time purchase. No recurring charges.</div>
             </div>
@@ -699,7 +699,7 @@ export default function ResultsPage() {
                     Your exact IQ score is ready
                   </div>
                   <div className="mt-1 text-xs text-zinc-500">
-                    Reveal your exact number + full cognitive profile · One-time payment of{" "}
+                    Reveal your exact number + full cognitive profile ·
                     <span className="font-semibold text-zinc-800">{PRICE_TEXT}</span> · No subscription
                   </div>
                 </div>
