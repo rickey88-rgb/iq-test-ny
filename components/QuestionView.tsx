@@ -49,7 +49,7 @@ export default function QuestionView({
     <div className="w-full">
       {/* Question prompt */}
       <div className="mt-4 md:mt-6">
-        <div className="max-w-[720px] text-[18px] md:text-[20px] leading-snug font-medium text-zinc-900 whitespace-pre-line">
+        <div className="max-w-[720px] text-[20px] md:text-[22px] leading-snug font-medium text-zinc-900 whitespace-pre-line">
           {prompt}
         </div>
       </div>
@@ -64,15 +64,19 @@ export default function QuestionView({
           )}
 
           {phase === "showing" && (
-            <div className="rounded-2xl border border-black/10 bg-white/70 px-5 py-4 max-w-[720px]">
-              <div className="text-xs text-zinc-500 mb-2">Memorize the sequence</div>
-              <div className="flex flex-wrap gap-3 text-[22px] md:text-[24px] font-semibold text-zinc-900">
-                {question.sequence.map((x, i) => (
-                  <span key={i} className="min-w-[28px] text-center">{x}</span>
-                ))}
-              </div>
-            </div>
-          )}
+  <div className="rounded-2xl border border-black/10 bg-white/70 px-5 py-4 max-w-[720px]">
+    <div className="text-xs text-zinc-500 mb-2">Memorize the sequence</div>
+
+    {/* No-wrap + horizontal scroll to prevent line breaks */}
+    <div className="flex flex-nowrap items-center gap-3 md:gap-4 overflow-x-auto whitespace-nowrap pb-1 text-[26px] md:text-[30px] font-semibold text-zinc-900">
+      {question.sequence.map((x, i) => (
+        <span key={i} className="min-w-[32px] md:min-w-[36px] text-center">
+          {x}
+        </span>
+      ))}
+    </div>
+  </div>
+)}
 
           {phase === "answer" && (
             <div className="text-xs text-zinc-500">Which option shows the same order?</div>

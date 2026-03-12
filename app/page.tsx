@@ -80,9 +80,9 @@ export default function HomePage() {
             </div>
             <ul className="mt-3 text-sm text-zinc-700 space-y-2">
               <li>Exact IQ Score</li>
-              <li>Raw score + weighted scoring breakdown</li>
-              <li>Strengths, limitations, domain profile summary</li>
-              <li>Shareable one-line summary (optional)</li>
+              <li>Percentile ranking (how you compare to others)</li>
+              <li>Weighted scoring breakdown (easy-to-understand)</li>
+              <li>Cognitive profile summary (strengths & weak spots)</li>
             </ul>
           </Card>
 
