@@ -415,15 +415,19 @@ function IQMeter({
 
         {/* ✅ Segment labels: 5-col grid, no overlap, no glued words */}
         <div className="mt-2 grid grid-cols-[1fr_1fr_1fr_1fr_1.35fr] gap-2 text-[10px] md:text-xs leading-tight tracking-wide text-zinc-500">
-  <span className="text-left whitespace-nowrap">Low</span>
-  <span className="text-center whitespace-nowrap">Below Avg</span>
-  <span className="text-center whitespace-nowrap text-zinc-700 font-medium">Average</span>
-  <span className="text-center whitespace-nowrap">Above Avg</span>
-  <span className="text-right whitespace-nowrap">
-  Gifted&nbsp;
-  <span className="text-zinc-700 font-medium text-[11px] md:text-sm">Genius</span>
-</span>
-</div>
+          <span className="text-left whitespace-nowrap">Low</span>
+          <span className="text-center whitespace-nowrap">Below Avg</span>
+          <span className="text-center whitespace-nowrap text-zinc-700 font-medium">
+            Average
+          </span>
+          <span className="text-center whitespace-nowrap">Above Avg</span>
+          <span className="text-right whitespace-nowrap">
+            Gifted&nbsp;
+            <span className="text-zinc-700 font-medium text-[11px] md:text-sm">
+              Genius
+            </span>
+          </span>
+        </div>
       </div>
 
       <style jsx global>{`
@@ -666,6 +670,15 @@ export default function ResultsPage() {
 
             <IQMeter iqValue={Number(result.iq)} locked={true} animateOnMount={true} />
 
+            {/* ✅ Locked percentile teaser (no extra animation) */}
+            <div className="mt-4 text-sm md:text-base font-semibold text-zinc-900 max-w-[760px]">
+              You’re smarter than{" "}
+              <span aria-hidden="true" className="inline-block blur-sm select-none">
+                ██%
+              </span>{" "}
+              of the world — based on your performance profile.
+            </div>
+
             <div className="mt-4 text-sm text-zinc-700 leading-relaxed max-w-[720px]">
               Most people stop at the label. That’s a mistake.
               <br />
@@ -675,6 +688,16 @@ export default function ResultsPage() {
               <br />
               <br />
               The label is only the surface.
+            </div>
+
+            {/* ✅ Variant A (statement block) */}
+            <div className="mt-5 rounded-xl border border-black/10 bg-white/70 p-4 max-w-[760px]">
+              <div className="text-sm md:text-base font-semibold text-zinc-900">
+                Yes, there’s a small one-time payment — because this isn’t a throwaway quiz.
+              </div>
+              <div className="mt-1 text-sm md:text-base font-semibold text-zinc-900">
+                No subscription nonsense — just one payment for full access.
+              </div>
             </div>
 
             <div className="mt-6 border border-black/10 rounded-xl p-5 bg-zinc-50">
@@ -687,8 +710,6 @@ export default function ResultsPage() {
                 <li>• The one limitation that influenced your final number</li>
                 <li>• Your full visual cognitive profile</li>
               </ul>
-
-              
             </div>
 
             {/* Trust + price + Apple/Google Pay */}
@@ -699,8 +720,8 @@ export default function ResultsPage() {
                     Your exact IQ score is ready
                   </div>
                   <div className="mt-1 text-xs text-zinc-500">
-  Reveal your exact number + full cognitive profile · No subscription
-</div>
+                    Reveal your exact number + full cognitive profile · Instant access
+                  </div>
                 </div>
 
                 <div className="flex items-center gap-2 text-xs text-zinc-500">
@@ -726,8 +747,8 @@ export default function ResultsPage() {
                 </button>
 
                 <div className="text-sm text-zinc-500">
-  <span className="font-semibold text-zinc-800">{PRICE_TEXT}</span> One-time payment.
-</div>
+                  <span className="font-semibold text-zinc-800">{PRICE_TEXT}</span> One-time payment.
+                </div>
               </div>
 
               <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-zinc-600">
@@ -744,10 +765,6 @@ export default function ResultsPage() {
                 </span>
 
                 <span className="text-zinc-500">Powered by {STRIPE_VENDOR}</span>
-              </div>
-
-              <div className="mt-3 text-xs text-zinc-500">
-                One-time charge only — no recurring billing, no membership.
               </div>
             </div>
 
