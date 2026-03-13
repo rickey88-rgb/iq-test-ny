@@ -30,13 +30,13 @@ export type MemoryQuestion = {
 export type Question = MCQuestion | MemoryQuestion;
 export const QUESTIONS: Question[] = [
   {
-    id: "q01",
-    type: "mc",
-    domain: "abstract",
-    prompt: "● ▲ ● ▲ ● ▲ ?",
-    options: ["●", "▲", "■", "● ▲"],
-    correctIndex: 0,
-  },
+  id: "q01",
+  type: "mc",
+  domain: "abstract",
+  prompt: "● ▲ ● ▲ ● ▲ ? ? ?",
+  options: ["● ▲ ●", "▲ ● ▲", "● ● ▲", "▲ ▲ ●"],
+  correctIndex: 0,
+},
   {
     id: "q02",
     type: "mc",
@@ -178,13 +178,13 @@ export const QUESTIONS: Question[] = [
   },
 
   {
-    id: "q16",
-    type: "mc",
-    domain: "abstract",
-    prompt: "▲ ▲ ●   ▲ ▲ ●   ▲ ▲ ?",
-    options: ["▲", "●", "▲ ●", "● ●"],
-    correctIndex: 1,
-  },
+  id: "q16",
+  type: "mc",
+  domain: "abstract",
+  prompt: "▲ ▲ ●   ▲ ▲ ●   ? ? ?",
+  options: ["▲ ▲ ●", "▲ ● ▲", "● ▲ ▲", "▲ ▲ ▲"],
+  correctIndex: 0,
+},
 
   {
     id: "q17",
