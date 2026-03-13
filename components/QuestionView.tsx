@@ -84,17 +84,25 @@ export default function QuestionView({
   <div className="rounded-2xl border border-black/10 bg-white/70 px-5 py-4 max-w-[720px]">
     <div className="text-xs text-zinc-500 mb-2">Memorize the sequence</div>
 
-    {/* No-wrap + horizontal scroll to prevent line breaks */}
-    <div className="flex flex-nowrap items-center gap-3 md:gap-4 overflow-x-auto whitespace-nowrap pb-1 text-[26px] md:text-[30px] font-semibold text-zinc-900 after:content-[''] after:block after:w-4 after:flex-none">
-      {question.sequence.map((x, i) => (
-        <span
-          key={i}
-          className="shrink-0 min-w-[32px] md:min-w-[36px] text-center"
-        >
-          {x}
-        </span>
-      ))}
-    </div>
+    {((question.sequence?.length ?? 0) >= 7) ? (
+      // ✅ Long sequences (7+): force-fit on one line (no wrap, no scroll, no clipping)
+      <div className="grid grid-flow-col auto-cols-fr items-center gap-2 md:gap-3 whitespace-nowrap pb-1 text-[clamp(18px,5.2vw,30px)] md:text-[30px] font-semibold text-zinc-900">
+        {question.sequence.map((x, i) => (
+          <span key={i} className="min-w-0 text-center font-mono tabular-nums">
+            {x}
+          </span>
+        ))}
+      </div>
+    ) : (
+      // ✅ Shorter sequences: keep your current look
+      <div className="flex flex-nowrap items-center gap-3 md:gap-4 overflow-x-auto whitespace-nowrap pb-1 text-[26px] md:text-[30px] font-semibold text-zinc-900 after:content-[''] after:block after:w-4 after:flex-none">
+        {question.sequence.map((x, i) => (
+          <span key={i} className="shrink-0 min-w-[32px] md:min-w-[36px] text-center">
+            {x}
+          </span>
+        ))}
+      </div>
+    )}
   </div>
 )}
           {phase === "answer" && (
