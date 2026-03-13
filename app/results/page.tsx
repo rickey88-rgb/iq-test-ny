@@ -673,9 +673,12 @@ export default function ResultsPage() {
             {/* ✅ Locked percentile teaser (no extra animation) */}
             <div className="mt-4 text-sm md:text-base font-semibold text-zinc-900 max-w-[760px]">
               You’re smarter than{" "}
-              <span aria-hidden="true" className="inline-block blur-sm select-none">
-                ██%
-              </span>{" "}
+              <span
+  aria-hidden="true"
+  className="inline-block select-none rounded-md border border-black/10 bg-black/5 px-1.5 py-0.5 font-semibold tracking-wider text-zinc-900/70"
+>
+  ██%
+</span>{" "}
               of the world — based on your performance profile.
             </div>
 
