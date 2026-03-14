@@ -323,9 +323,26 @@ export default function HomePage() {
             <div className="rounded-2xl border border-black/10 bg-black/5 p-6">
               <div className="text-sm font-semibold">3) Unlock the full report</div>
               <p className="mt-2 text-sm text-zinc-700 leading-relaxed">
-                Your exact IQ estimate, raw vs weighted scoring, and a domain
+                Your exact IQ score, raw vs weighted scoring, and a domain
                 breakdown with strengths and limitations.
               </p>
+            </div>
+          </div>
+        </section>
+                {/* Bottom CTA */}
+        <section className="mt-12 md:mt-16">
+          <div className="rounded-2xl border border-black/10 bg-black/5 p-8 md:p-10 text-center">
+            <div className="text-2xl md:text-3xl font-semibold tracking-tight text-zinc-900">
+              Ready to see where you stand?
+            </div>
+
+            <p className="mt-3 max-w-[640px] mx-auto text-sm md:text-base text-zinc-700 leading-relaxed">
+              Take the test and unlock your exact IQ score, percentile ranking,
+              and full performance breakdown.
+            </p>
+
+            <div className="mt-6 flex justify-center">
+              <StartTestCta />
             </div>
           </div>
         </section>
