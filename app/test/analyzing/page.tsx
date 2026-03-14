@@ -21,12 +21,12 @@ if (!savedState || !savedState.result) {
     const step1Timer = setTimeout(() => setStep(1), 600);
     const step2Timer = setTimeout(() => setStep(2), 1400);
     const step3Timer = setTimeout(() => setStep(3), 2200);
-    const teaserTimer = setTimeout(() => setShowTeaser(true), 2600);
+    const teaserTimer = setTimeout(() => setShowTeaser(true), 2500);
 
     // ÄNDRA DENNA ROUTE om din pre-paywall ligger på en annan URL
     const redirectTimer = setTimeout(() => {
-      router.replace("/test/result");
-    }, 3000);
+      router.replace("/results");
+    }, 3600);
 
     return () => {
       clearTimeout(step1Timer);

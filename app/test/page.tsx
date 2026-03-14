@@ -174,7 +174,7 @@ export default function TestPage() {
     // session completed -> remove active marker so next visit doesn't look like a "reload mid-session"
     sessionStorage.removeItem(ACTIVE_SESSION_KEY);
 
-    router.replace("/results");
+   router.replace("/test/analyzing");
   };
 
   // auto-submit when time is up
