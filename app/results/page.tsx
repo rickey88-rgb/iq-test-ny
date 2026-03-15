@@ -10,7 +10,7 @@ function clamp(n: number, a: number, b: number) {
   return Math.max(a, Math.min(b, n));
 }
 
-/** deterministic tiny hash → 0..1 (stable “jitter” so bars look alive without extra data) */
+/** deterministic tiny hash -> 0..1 (stable "jitter" so bars look alive without extra data) */
 function hash01(input: string) {
   let h = 2166136261;
   for (let i = 0; i < input.length; i++) {
@@ -230,17 +230,17 @@ function IQMeter({
   const targetPos = ((iq - MIN) / (MAX - MIN)) * 100;
   const percentile = iqToPercentile(iq);
 
-  const [pos, setPos] = useState(0);
+  const revealStartPos = clamp(targetPos + (targetPos >= 50 ? -26 : 26), 8, 92);
+
+  const [pos, setPos] = useState(revealStartPos);
 
   useEffect(() => {
-    // LOCKED: no targeting; sweep via CSS animation
     if (locked) {
-      setPos(0);
+      setPos(revealStartPos);
       return;
     }
 
-    // UNLOCKED: animate to exact once
-    const startPos = animateOnMount ? 0 : targetPos;
+    const startPos = animateOnMount ? revealStartPos : targetPos;
     setPos(startPos);
 
     const raf = requestAnimationFrame(() => {
@@ -248,12 +248,12 @@ function IQMeter({
     });
 
     return () => cancelAnimationFrame(raf);
-  }, [locked, animateOnMount, targetPos]);
+  }, [locked, animateOnMount, targetPos, revealStartPos]);
 
   const averageIndex = Math.round(((100 - MIN) / (MAX - MIN)) * 25);
 
   return (
-    <div className="mt-5 rounded-2xl border border-black/10 bg-white/75 p-5">
+    <div className="mt-5 rounded-[24px] border border-black/10 bg-white/80 p-5 shadow-[0_12px_30px_rgba(0,0,0,0.04)]">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <div className="text-xs uppercase tracking-wider text-zinc-500">IQ meter</div>
@@ -283,72 +283,63 @@ function IQMeter({
         )}
       </div>
 
-      <div className="mt-4">
-        <div className="relative">
-          {/* TRACK: strong zones + fill paint + sheen */}
-          <div className="relative h-3 rounded-full overflow-hidden border border-black/12 bg-zinc-100 shadow-[inset_0_0_0_1px_rgba(0,0,0,0.03)]">
-            {/* base zone tint */}
+      <div className="mt-5">
+        <div className="relative px-2">
+          {/* TRACK */}
+          <div className="relative h-6 overflow-visible rounded-full border border-black/10 bg-white shadow-[inset_0_1px_0_rgba(255,255,255,0.95),inset_0_-7px_12px_rgba(0,0,0,0.10),0_12px_24px_rgba(0,0,0,0.06)]">
             <div
-              className="absolute inset-0"
+              className="absolute inset-[1px] rounded-full"
               style={{
                 background:
-                  "linear-gradient(90deg, rgba(56,189,248,0.44) 0%, rgba(56,189,248,0.26) 35%, rgba(251,191,36,0.26) 70%, rgba(251,191,36,0.44) 100%)",
+                  "linear-gradient(90deg, #ff6658 0%, #ff9744 16%, #f3cf4e 34%, #90db63 52%, #3fd5ff 70%, #628cff 85%, #b56cff 100%)",
               }}
             />
 
-            {/* sweep fill (paints with the marker) */}
             <div
-              className="absolute left-0 top-0 h-full rounded-full"
-              style={
-                locked
-                  ? {
-                      width: "0%",
-                      background:
-                        "linear-gradient(90deg, rgba(56,189,248,0.75) 0%, rgba(56,189,248,0.42) 40%, rgba(251,191,36,0.48) 75%, rgba(251,191,36,0.80) 100%)",
-                      animation:
-                        "iqFill 3600ms cubic-bezier(0.16, 1, 0.3, 1) infinite alternate",
-                      opacity: 0.95,
-                    }
-                  : {
-                      width: `${targetPos}%`,
-                      background:
-                        "linear-gradient(90deg, rgba(56,189,248,0.65) 0%, rgba(56,189,248,0.34) 40%, rgba(251,191,36,0.40) 75%, rgba(251,191,36,0.72) 100%)",
-                      transition: "width 1200ms cubic-bezier(0.16, 1, 0.3, 1)",
-                      opacity: 0.9,
-                    }
-              }
-            />
-
-            {/* sheen */}
-            <div
-              className="absolute inset-0"
+              className="absolute inset-[1px] rounded-full"
               style={{
                 background:
-                  "linear-gradient(110deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.98) 45%, rgba(255,255,255,0) 60%)",
-                transform: "translateX(-120%)",
-                animation: "iqSheen 2.8s ease-in-out infinite",
-                opacity: 0.9,
+                  "linear-gradient(180deg, rgba(255,255,255,0.78) 0%, rgba(255,255,255,0.26) 36%, rgba(255,255,255,0.06) 54%, rgba(0,0,0,0.12) 100%)",
               }}
             />
+
+            {locked ? (
+              <div
+                className="absolute inset-y-[2px] w-[24%] rounded-full bg-white/35 blur-[2px]"
+                style={{
+                  transform: "translateX(-70%)",
+                  animation: "iqTrackScan 2300ms ease-in-out infinite alternate",
+                }}
+              />
+            ) : (
+              <div
+                className="absolute inset-y-[3px] left-0 rounded-full bg-white/28 blur-[1px]"
+                style={{
+                  width: `${targetPos}%`,
+                  transition: "width 1400ms cubic-bezier(0.16, 1, 0.3, 1)",
+                }}
+              />
+            )}
           </div>
 
-          {/* Dense tick marks */}
-          <div className="pointer-events-none absolute inset-0 flex items-center">
+          {/* TICKS */}
+          <div className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2">
             {Array.from({ length: 26 }).map((_, i) => {
               const x = (i / 25) * 100;
               const isMajor = i % 5 === 0;
               const isAverage = i === averageIndex;
+
               return (
                 <div
                   key={i}
-                  className="absolute"
-                  style={{ left: `${x}%`, transform: "translateX(-50%)" }}
+                  className="absolute top-1/2 -translate-y-1/2"
+                  style={{ left: `${x}%`, transform: "translate(-50%, -50%)" }}
                 >
                   <div
                     className={[
-                      "w-px",
-                      isMajor ? "h-4 bg-black/20" : "h-2 bg-black/14",
-                      isAverage ? "h-5 bg-black/30" : "",
+                      "w-px rounded-full",
+                      isMajor ? "h-5 bg-black/20" : "h-2.5 bg-black/12",
+                      isAverage ? "h-6 bg-black/30" : "",
                     ].join(" ")}
                   />
                 </div>
@@ -356,53 +347,93 @@ function IQMeter({
             })}
           </div>
 
-          {/* MARKER: sweep when locked, land when unlocked */}
-          <div
-            className="absolute top-1/2 transform-gpu will-change-transform"
-            style={
-              locked
-                ? {
-                    left: "0%",
-                    transform: "translate(-50%, -50%)",
-                    animation:
-                      "iqSweep 3600ms cubic-bezier(0.16, 1, 0.3, 1) infinite alternate",
-                  }
-                : {
-                    left: `${pos}%`,
-                    transform: "translate(-50%, -50%)",
-                    transition: "left 1200ms cubic-bezier(0.16, 1, 0.3, 1)",
-                  }
-            }
-          >
+          {/* MARKER */}
+          <div className="pointer-events-none absolute inset-x-0 top-0">
             <div
-              className={[
-                "relative",
-                // ✅ no blur in locked mode
+              className="absolute transform-gpu will-change-[left]"
+              style={
                 locked
-                  ? "drop-shadow-[0_0px_26px_rgba(56,189,248,0.45)]"
-                  : "drop-shadow-[0_0px_20px_rgba(251,191,36,0.35)]",
-              ].join(" ")}
+                  ? {
+                      left: "1.5%",
+                      top: "0px",
+                      transform: "translateX(-50%)",
+                      animation:
+                        "iqSeekSlide 2900ms cubic-bezier(0.46, 0.05, 0.54, 0.95) infinite alternate",
+                    }
+                  : {
+                      left: `${pos}%`,
+                      top: "0px",
+                      transform: "translateX(-50%)",
+                      transition: "left 1450ms cubic-bezier(0.16, 1, 0.3, 1)",
+                    }
+              }
             >
-              {/* Arrow only */}
-              <div
-                className="mx-auto h-0 w-0 border-l-[11px] border-r-[11px] border-t-[16px] border-l-transparent border-r-transparent"
-                style={{
-                  borderTopColor: locked ? "rgb(56,189,248)" : "rgb(251,191,36)",
-                }}
-              />
+              <div className="relative flex flex-col items-center">
+                <div className="relative h-[72px] w-[76px]">
+                  {/* pulse ring around hub */}
+                  <div
+                    className="absolute left-1/2 top-[36px] h-9 w-9 -translate-x-1/2 -translate-y-1/2 rounded-full border border-amber-300/45"
+                    style={{
+                      animation: locked ? "iqHubPulse 1800ms ease-in-out infinite" : "none",
+                      opacity: locked ? 0.95 : 0.35,
+                    }}
+                  />
 
-              {/* ✅ Number chip ONLY after paywall */}
-              {!locked && (
-                <div className="mt-2 rounded-full border border-black/10 bg-white px-3 py-1 text-xs font-semibold text-zinc-900 shadow-sm tabular-nums">
-                  {formatOneDecimal(iq)}
+                  {/* dark outline behind needle */}
+                  <div
+                    className="absolute left-1/2 top-[2px] h-[38px] w-[22px] -translate-x-1/2"
+                    style={{
+                      clipPath: "polygon(50% 0, 100% 22%, 76% 100%, 24% 100%, 0 22%)",
+                      background: "rgba(0,0,0,0.38)",
+                      filter: "blur(0.2px)",
+                    }}
+                  />
+
+                  {/* main needle */}
+                  <div
+                    className="absolute left-1/2 top-[4px] h-[34px] w-[18px] -translate-x-1/2"
+                    style={{
+                      clipPath: "polygon(50% 0, 100% 22%, 76% 100%, 24% 100%, 0 22%)",
+                      background:
+                        "linear-gradient(180deg, rgba(255,231,160,1) 0%, rgba(245,158,11,1) 58%, rgba(194,65,12,0.98) 100%)",
+                      boxShadow: locked
+                        ? "0 0 14px rgba(245,158,11,0.24)"
+                        : "0 0 8px rgba(245,158,11,0.14)",
+                    }}
+                  />
+
+                  {/* needle highlight */}
+                  <div className="absolute left-1/2 top-[8px] h-[16px] w-[4px] -translate-x-1/2 rounded-full bg-white/70" />
+
+                  {/* collar/base */}
+                  <div
+                    className="absolute left-1/2 top-[28px] h-[12px] w-[24px] -translate-x-1/2 rounded-full border border-black/10"
+                    style={{
+                      background:
+                        "linear-gradient(180deg, rgba(255,225,160,1) 0%, rgba(245,158,11,1) 60%, rgba(180,83,9,0.96) 100%)",
+                      boxShadow: "0 2px 6px rgba(0,0,0,0.16)",
+                    }}
+                  />
+
+                  {/* outer hub - sits under the meter */}
+                  <div className="absolute left-1/2 top-[36px] h-[24px] w-[24px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/80 bg-[radial-gradient(circle_at_35%_35%,_#ffffff_0%,_#f5f5f5_35%,_#d4d4d8_72%,_#a1a1aa_100%)] shadow-[0_6px_16px_rgba(0,0,0,0.24)]" />
+
+                  {/* inner hub */}
+                  <div className="absolute left-1/2 top-[36px] h-[10px] w-[10px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-zinc-700/85 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)]" />
                 </div>
-              )}
+
+                {!locked && (
+                  <div className="mt-1 rounded-full border border-black/10 bg-white px-3 py-1 text-xs font-semibold text-zinc-900 shadow-sm tabular-nums">
+                    {formatOneDecimal(iq)}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
 
         {/* Tick labels */}
-        <div className="mt-3 flex items-center justify-between text-xs tabular-nums">
+        <div className="mt-4 flex items-center justify-between text-xs tabular-nums">
           {ticks.map((t) => (
             <div
               key={t}
@@ -413,59 +444,51 @@ function IQMeter({
           ))}
         </div>
 
-        {/* ✅ Segment labels: 5-col grid, no overlap, no glued words */}
-        <div className="mt-2 grid grid-cols-[1fr_1fr_1fr_1fr_1.35fr] gap-2 text-[10px] md:text-xs leading-tight tracking-wide text-zinc-500">
+        {/* Zone labels */}
+        <div className="mt-2 grid grid-cols-[1.1fr_1fr_1fr_1.1fr] gap-2 text-[10px] md:text-xs font-semibold uppercase tracking-[0.16em] text-zinc-500">
           <span className="text-left whitespace-nowrap">Low</span>
-          <span className="text-center whitespace-nowrap">Below Avg</span>
-          <span className="text-center whitespace-nowrap text-zinc-700 font-medium">
-            Average
-          </span>
-          <span className="text-center whitespace-nowrap">Above Avg</span>
-          <span className="text-right whitespace-nowrap">
-            Gifted&nbsp;
-            <span className="text-zinc-700 font-medium text-[11px] md:text-sm">
-              Genius
-            </span>
-          </span>
+          <span className="text-center whitespace-nowrap">Average</span>
+          <span className="text-center whitespace-nowrap">High</span>
+          <span className="text-right whitespace-nowrap text-zinc-700">Genius</span>
         </div>
       </div>
 
       <style jsx global>{`
-        @keyframes iqSheen {
-          0% {
-            transform: translateX(-120%);
+        @keyframes iqSeekSlide {
+          from {
+            left: 1.5%;
           }
-          55% {
-            transform: translateX(120%);
-          }
-          100% {
-            transform: translateX(120%);
+          to {
+            left: 98.5%;
           }
         }
 
-        /* ✅ smooth ping-pong, no teleport */
-        @keyframes iqSweep {
-          0% {
-            left: 0%;
+        @keyframes iqTrackScan {
+          from {
+            transform: translateX(-70%);
+            opacity: 0.45;
           }
-          100% {
-            left: 100%;
+          to {
+            transform: translateX(300%);
+            opacity: 0.95;
           }
         }
 
-        @keyframes iqFill {
-          0% {
-            width: 0%;
-          }
+        @keyframes iqHubPulse {
+          0%,
           100% {
-            width: 100%;
+            transform: translate(-50%, -50%) scale(0.96);
+            opacity: 0.45;
+          }
+          50% {
+            transform: translate(-50%, -50%) scale(1.08);
+            opacity: 0.95;
           }
         }
       `}</style>
     </div>
   );
 }
-
 export default function ResultsPage() {
   const [hydrated, setHydrated] = useState(false);
   const [unlocked, setUnlockedState] = useState(false);
@@ -670,15 +693,14 @@ export default function ResultsPage() {
 
             <IQMeter iqValue={Number(result.iq)} locked={true} animateOnMount={true} />
 
-            {/* ✅ Locked percentile teaser (no extra animation) */}
             <div className="mt-4 text-sm md:text-base font-semibold text-zinc-900 max-w-[760px]">
               You’re smarter than{" "}
               <span
-  aria-hidden="true"
-  className="inline-block select-none rounded-md border border-black/10 bg-black/5 px-1.5 py-0.5 font-semibold tracking-wider text-zinc-900/70"
->
-  ██%
-</span>{" "}
+                aria-hidden="true"
+                className="inline-block select-none rounded-md border border-black/10 bg-black/5 px-1.5 py-0.5 font-semibold tracking-wider text-zinc-900/70"
+              >
+                ██%
+              </span>{" "}
               of the world — based on your performance profile.
             </div>
 
@@ -687,13 +709,13 @@ export default function ResultsPage() {
               <br />
               <br />
               Your result isn’t just a category — it reflects a specific response pattern.
-              Some of your decisions were faster than expected. Others reveal something far more interesting.
+              Some of your decisions were faster than expected. Others reveal something far more
+              interesting.
               <br />
               <br />
               The label is only the surface.
             </div>
 
-            {/* ✅ Variant A (statement block) */}
             <div className="mt-5 rounded-xl border border-black/10 bg-white/70 p-4 max-w-[760px]">
               <div className="text-sm md:text-base font-semibold text-zinc-900">
                 Yes, there’s a small one-time payment — because this isn’t a throwaway quiz.
@@ -707,7 +729,7 @@ export default function ResultsPage() {
               <div className="text-xs uppercase tracking-wider text-zinc-500">Locked insights</div>
 
               <ul className="mt-4 text-sm text-zinc-700 space-y-3">
-                <li>• Your exact IQ estimate</li>
+                <li>• Your exact IQ score</li>
                 <li>• Exact percentile</li>
                 <li>• The strongest cognitive signal detected</li>
                 <li>• The one limitation that influenced your final number</li>
@@ -715,7 +737,6 @@ export default function ResultsPage() {
               </ul>
             </div>
 
-            {/* Trust + price + Apple/Google Pay */}
             <div className="mt-6 rounded-xl border border-black/10 bg-white/60 p-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
@@ -739,7 +760,6 @@ export default function ResultsPage() {
                 </div>
               </div>
 
-              {/* ✅ Force-green by NOT using PrimaryButton here */}
               <div className="mt-4 flex flex-wrap gap-3 items-center">
                 <button
                   type="button"
@@ -779,7 +799,6 @@ export default function ResultsPage() {
         {unlocked && (
           <div className="grid gap-4">
             <Card className="p-3 md:p-7">
-              {/* ✅ Make exact IQ the hero */}
               <div className="flex flex-wrap items-end justify-between gap-4">
                 <div>
                   <div className="text-xs uppercase tracking-wider text-zinc-500">Exact result</div>
@@ -788,7 +807,8 @@ export default function ResultsPage() {
                   </div>
                   <div className="mt-2 text-sm text-zinc-600">
                     Higher than approximately{" "}
-                    <span className="font-semibold text-zinc-900">{exactPercentile}%</span> of the population
+                    <span className="font-semibold text-zinc-900">{exactPercentile}%</span> of the
+                    population
                   </div>
                 </div>
 
