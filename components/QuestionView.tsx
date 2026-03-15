@@ -126,7 +126,12 @@ export default function QuestionView({
       )}
 
       {/* Options */}
-      <div className="mt-5 grid gap-3">
+      <div
+  className={[
+    "mt-5 grid gap-3",
+    isMatrix ? "grid-cols-2" : "grid-cols-1",
+  ].join(" ")}
+>
         {isMatrix
           ? question.options.map((opt, i) => (
               <Option

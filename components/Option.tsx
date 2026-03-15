@@ -43,14 +43,16 @@ export default function Option({
     >
       <div className="flex items-center gap-3">
         <div
-          className={[
-            "mt-[2px] w-8 h-8 md:w-8 md:h-8 flex items-center justify-center rounded-md text-sm font-semibold shrink-0",
-            selected ? "bg-zinc-900 text-zinc-50" : "bg-black/5 text-zinc-700",
-          ].join(" ")}
-          aria-hidden
-        >
-          {label}
-        </div>
+  className={[
+    isVisual
+      ? "mt-[1px] w-7 h-7 flex items-center justify-center rounded-md text-xs font-semibold shrink-0"
+      : "mt-[2px] w-8 h-8 md:w-8 md:h-8 flex items-center justify-center rounded-md text-sm font-semibold shrink-0",
+    selected ? "bg-zinc-900 text-zinc-50" : "bg-black/5 text-zinc-700",
+  ].join(" ")}
+  aria-hidden
+>
+  {label}
+</div>
 
         {isVisual ? (
           <div className="min-h-[58px] flex items-center">{visual}</div>
