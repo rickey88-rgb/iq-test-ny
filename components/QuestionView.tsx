@@ -73,7 +73,7 @@ export default function QuestionView({
 
       {/* Matrix block */}
       {isMatrix && (
-        <div className="mt-4 md:mt-3 max-w-[720px]">
+        <div className="mt-4 md:mt-2 max-w-[720px]">
           <div className="grid grid-cols-3 gap-2 md:gap-3 w-fit mx-auto">
             {question.grid.map((cell, i) =>
               cell ? (
@@ -125,13 +125,13 @@ export default function QuestionView({
         </div>
       )}
 
-      {/* Options */}
+           {/* Options */}
       <div
-  className={[
-    "mt-5 grid gap-3",
-    isMatrix ? "grid-cols-2" : "grid-cols-1",
-  ].join(" ")}
->
+        className={[
+          "mt-4 md:mt-3 grid gap-3",
+          isMatrix ? "grid-cols-2" : "grid-cols-1",
+        ].join(" ")}
+      >
         {isMatrix
           ? question.options.map((opt, i) => (
               <Option
@@ -155,7 +155,9 @@ export default function QuestionView({
             ))}
       </div>
 
-      <div className="mt-4 text-xs text-zinc-500">You cannot return to previous questions.</div>
+      <div className="mt-4 text-xs text-zinc-500 md:hidden">
+  You cannot return to previous questions.
+</div>
     </div>
   );
 }

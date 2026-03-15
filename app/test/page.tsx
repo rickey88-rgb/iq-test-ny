@@ -240,8 +240,8 @@ export default function TestPage() {
         msLeft={Math.max(0, endTime - Date.now())}
       />
 
-      <div className="mx-auto max-w-test px-4 md:px-6 py-6">
-        <Card className="p-5 md:p-7">
+      <div className="mx-auto max-w-test px-4 md:px-6 py-6 md:py-3">
+        <Card className="p-5 md:p-5">
           {submitting && (
             <div className="mb-4 text-sm text-zinc-600">Submitting your responses…</div>
           )}
@@ -257,11 +257,14 @@ export default function TestPage() {
             locked={locked || submitting}
           />
 
-          <div className="mt-6 flex justify-between items-center text-xs text-zinc-500">
-            <div>30-minute session. Auto-submit at 0:00.</div>
+         <div className="mt-3 md:mt-2 flex items-center justify-between gap-3 border-t border-black/5 pt-3 text-[11px] md:text-xs text-zinc-500">
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+  <span>30-minute session • Auto-submit at 0:00</span>
+  <span className="hidden md:inline">• You cannot return to previous questions.</span>
+</div>
             <button
               type="button"
-              className="underline hover:text-zinc-700"
+              className="shrink-0 underline hover:text-zinc-700"
               onClick={() => submitNow()}
               disabled={submitting}
             >
