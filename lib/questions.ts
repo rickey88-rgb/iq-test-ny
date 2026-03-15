@@ -26,8 +26,29 @@ export type MemoryQuestion = {
   options: string[];
   correctIndex: number;
 };
+export type MatrixLayout =
+  | "center"
+  | "horizontal2"
+  | "horizontal3"
+  | "diagonal2"
+  | "diagonal3"
+  | "vertical2"
+  | "vertical3";
 
-export type Question = MCQuestion | MemoryQuestion;
+export type MatrixCell = {
+  layout: MatrixLayout;
+};
+
+export type MatrixQuestion = {
+  id: string;
+  type: "matrix";
+  domain: QuestionDomain;
+  prompt: string;
+  grid: (MatrixCell | null)[];
+  options: MatrixCell[];
+  correctIndex: number;
+};
+export type Question = MCQuestion | MemoryQuestion | MatrixQuestion;
 export const QUESTIONS: Question[] = [
   {
   id: "q01",
@@ -46,18 +67,31 @@ export const QUESTIONS: Question[] = [
     correctIndex: 1,
   },
   {
-    id: "q03",
-    type: "mc",
-    domain: "verbal",
-    prompt: "All cats are animals.\nAll animals need food.\nWhich statement must be true?",
-    options: [
-      "All cats need food",
-      "All animals are cats",
-      "No cats are animals",
-      "Some cats are not animals",
-    ],
-    correctIndex: 0,
-  },
+  id: "q03",
+  type: "matrix",
+  domain: "abstract",
+  prompt: "Which figure completes the pattern?",
+  grid: [
+    { layout: "center" },
+    { layout: "horizontal2" },
+    { layout: "horizontal3" },
+
+    { layout: "center" },
+    { layout: "diagonal2" },
+    { layout: "diagonal3" },
+
+    { layout: "center" },
+    { layout: "vertical2" },
+    null,
+  ],
+  options: [
+    { layout: "vertical3" },   // correct
+    { layout: "horizontal3" },
+    { layout: "vertical2" },
+    { layout: "diagonal3" },
+  ],
+  correctIndex: 0,
+},
   {
     id: "q04",
     type: "mc",

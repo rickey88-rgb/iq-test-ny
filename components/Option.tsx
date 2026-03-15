@@ -5,24 +5,26 @@ import React from "react";
 function looksLikeSymbols(s: string) {
   const t = s.replace(/\s+/g, "");
   if (!t) return false;
-  // True om det inte finns bokstäver/siffror (dvs mest symboler)
   return !/[A-Za-z0-9ÅÄÖåäö]/.test(t);
 }
 
 export default function Option({
   label,
   text,
+  visual,
   selected,
   onSelect,
   disabled,
 }: {
   label: string;
-  text: string;
+  text?: string;
+  visual?: React.ReactNode;
   selected: boolean;
   onSelect: () => void;
   disabled?: boolean;
 }) {
-  const isSymbolText = looksLikeSymbols(text);
+  const isSymbolText = text ? looksLikeSymbols(text) : false;
+  const isVisual = !!visual;
 
   return (
     <button
@@ -39,10 +41,10 @@ export default function Option({
         selected ? "bg-black/5 border-black/25" : "",
       ].join(" ")}
     >
-      <div className="flex items-start gap-3">
+      <div className="flex items-center gap-3">
         <div
           className={[
-            "mt-[2px] w-8 h-8 md:w-8 md:h-8 flex items-center justify-center rounded-md text-sm font-semibold",
+            "mt-[2px] w-8 h-8 md:w-8 md:h-8 flex items-center justify-center rounded-md text-sm font-semibold shrink-0",
             selected ? "bg-zinc-900 text-zinc-50" : "bg-black/5 text-zinc-700",
           ].join(" ")}
           aria-hidden
@@ -50,16 +52,20 @@ export default function Option({
           {label}
         </div>
 
-        <div
-          className={[
-            "text-zinc-900 whitespace-pre-line",
-            isSymbolText
-              ? "text-[22px] md:text-[24px] leading-[1.05] font-semibold"
-              : "text-[15px] md:text-[15px] leading-snug",
-          ].join(" ")}
-        >
-          {text}
-        </div>
+        {isVisual ? (
+          <div className="min-h-[58px] flex items-center">{visual}</div>
+        ) : (
+          <div
+            className={[
+              "text-zinc-900 whitespace-pre-line",
+              isSymbolText
+                ? "text-[22px] md:text-[24px] leading-[1.05] font-semibold"
+                : "text-[15px] md:text-[15px] leading-snug",
+            ].join(" ")}
+          >
+            {text}
+          </div>
+        )}
       </div>
     </button>
   );

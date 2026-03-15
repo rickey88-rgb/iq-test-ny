@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { Question } from "@/lib/questions";
 import Option from "@/components/Option";
+import MatrixFigure from "@/components/MatrixFigure";
 import { PrimaryButton } from "@/components/ui";
 
 const LABELS = ["A", "B", "C", "D"];
@@ -10,7 +11,6 @@ const LABELS = ["A", "B", "C", "D"];
 const looksLikeSymbols = (s: string) => {
   const t = s.replace(/\s+/g, "");
   if (!t) return false;
-  // True om det inte finns bokstäver/siffror (dvs mest symboler)
   return !/[A-Za-z0-9ÅÄÖåäö]/.test(t);
 };
 
@@ -29,12 +29,11 @@ export default function QuestionView({
   onSelect: (idx: number) => void;
   locked: boolean;
 }) {
-  // memory handling
   const isMemory = question.type === "memory";
+  const isMatrix = question.type === "matrix";
   const [phase, setPhase] = useState<"ready" | "showing" | "answer">("ready");
 
   useEffect(() => {
-    // reset phase on question change
     setPhase(isMemory ? "ready" : "answer");
   }, [question.id, isMemory]);
 
@@ -49,27 +48,43 @@ export default function QuestionView({
 
   const prompt = useMemo(() => {
     if (question.type === "mc") return question.prompt;
+    if (question.type === "matrix") return question.prompt;
     return question.questionText;
   }, [question]);
 
-  const isSymbolPrompt = looksLikeSymbols(prompt);
+  const isSymbolPrompt = !isMatrix && looksLikeSymbols(prompt);
 
   return (
     <div className="w-full">
       {/* Question prompt */}
-<div className="mt-4 md:mt-6">
-  {isSymbolPrompt ? (
-    <div className="max-w-[720px] text-zinc-900">
-      <div className="flex flex-nowrap items-center gap-3 md:gap-4 overflow-x-auto whitespace-nowrap py-1 pb-2 text-[26.5px] md:text-[32px] leading-[1.12] font-semibold">
-  {prompt}
-</div>
-    </div>
-  ) : (
-    <div className="max-w-[720px] text-zinc-900 whitespace-pre-line text-[20px] md:text-[22px] leading-snug font-medium">
-      {prompt}
-    </div>
-  )}
-</div>
+      <div className="mt-4 md:mt-6">
+        {isSymbolPrompt ? (
+          <div className="max-w-[720px] text-zinc-900">
+            <div className="flex flex-nowrap items-center gap-3 md:gap-4 overflow-x-auto whitespace-nowrap py-1 pb-2 text-[26.5px] md:text-[32px] leading-[1.12] font-semibold">
+              {prompt}
+            </div>
+          </div>
+        ) : (
+          <div className="max-w-[720px] text-zinc-900 whitespace-pre-line text-[20px] md:text-[22px] leading-snug font-medium">
+            {prompt}
+          </div>
+        )}
+      </div>
+
+      {/* Matrix block */}
+      {isMatrix && (
+        <div className="mt-6 max-w-[720px]">
+          <div className="grid grid-cols-3 gap-2 md:gap-4 w-fit mx-auto">
+            {question.grid.map((cell, i) =>
+              cell ? (
+                <MatrixFigure key={i} layout={cell.layout} size="lg" />
+              ) : (
+                <MatrixFigure key={i} missing size="lg" />
+              )
+            )}
+          </div>
+        </div>
+      )}
 
       {/* Memory sequence block */}
       {isMemory && (
@@ -80,31 +95,30 @@ export default function QuestionView({
             </PrimaryButton>
           )}
 
-         {phase === "showing" && (
-  <div className="rounded-2xl border border-black/10 bg-white/70 px-5 py-4 max-w-[720px]">
-    <div className="text-xs text-zinc-500 mb-2">Memorize the sequence</div>
+          {phase === "showing" && (
+            <div className="rounded-2xl border border-black/10 bg-white/70 px-5 py-4 max-w-[720px]">
+              <div className="text-xs text-zinc-500 mb-2">Memorize the sequence</div>
 
-    {((question.sequence?.length ?? 0) >= 7) ? (
-      // ✅ Long sequences (7+): force-fit on one line (no wrap, no scroll, no clipping)
-      <div className="grid grid-flow-col auto-cols-fr items-center gap-2 md:gap-3 whitespace-nowrap pb-1 text-[clamp(18px,5.2vw,30px)] md:text-[30px] font-semibold text-zinc-900">
-        {question.sequence.map((x, i) => (
-          <span key={i} className="min-w-0 text-center font-mono tabular-nums">
-            {x}
-          </span>
-        ))}
-      </div>
-    ) : (
-      // ✅ Shorter sequences: keep your current look
-      <div className="flex flex-nowrap items-center gap-3 md:gap-4 overflow-x-auto whitespace-nowrap pb-1 text-[26px] md:text-[30px] font-semibold text-zinc-900 after:content-[''] after:block after:w-4 after:flex-none">
-        {question.sequence.map((x, i) => (
-          <span key={i} className="shrink-0 min-w-[32px] md:min-w-[36px] text-center">
-            {x}
-          </span>
-        ))}
-      </div>
-    )}
-  </div>
-)}
+              {(question.sequence?.length ?? 0) >= 7 ? (
+                <div className="grid grid-flow-col auto-cols-fr items-center gap-2 md:gap-3 whitespace-nowrap pb-1 text-[clamp(18px,5.2vw,30px)] md:text-[30px] font-semibold text-zinc-900">
+                  {question.sequence.map((x, i) => (
+                    <span key={i} className="min-w-0 text-center font-mono tabular-nums">
+                      {x}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-nowrap items-center gap-3 md:gap-4 overflow-x-auto whitespace-nowrap pb-1 text-[26px] md:text-[30px] font-semibold text-zinc-900 after:content-[''] after:block after:w-4 after:flex-none">
+                  {question.sequence.map((x, i) => (
+                    <span key={i} className="shrink-0 min-w-[32px] md:min-w-[36px] text-center">
+                      {x}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
           {phase === "answer" && (
             <div className="text-xs text-zinc-500">Which option shows the same order?</div>
           )}
@@ -113,19 +127,29 @@ export default function QuestionView({
 
       {/* Options */}
       <div className="mt-5 grid gap-3">
-        {(question.type === "mc" ? question.options : question.options).map((opt, i) => (
-          <Option
-            key={i}
-            label={LABELS[i]}
-            text={opt}
-            selected={selectedIndex === i}
-            onSelect={() => canAnswer && onSelect(i)}
-            disabled={!canAnswer}
-          />
-        ))}
+        {isMatrix
+          ? question.options.map((opt, i) => (
+              <Option
+                key={i}
+                label={LABELS[i]}
+                visual={<MatrixFigure layout={opt.layout} size="sm" />}
+                selected={selectedIndex === i}
+                onSelect={() => canAnswer && onSelect(i)}
+                disabled={!canAnswer}
+              />
+            ))
+          : question.options.map((opt, i) => (
+              <Option
+                key={i}
+                label={LABELS[i]}
+                text={opt}
+                selected={selectedIndex === i}
+                onSelect={() => canAnswer && onSelect(i)}
+                disabled={!canAnswer}
+              />
+            ))}
       </div>
 
-      {/* Small note (desktop) */}
       <div className="mt-4 text-xs text-zinc-500">You cannot return to previous questions.</div>
     </div>
   );
