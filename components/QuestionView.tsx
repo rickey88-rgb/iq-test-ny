@@ -57,7 +57,7 @@ export default function QuestionView({
   return (
     <div className="w-full">
       {/* Question prompt */}
-      <div className="mt-4 md:mt-6">
+      <div className="mt-4 md:mt-0">
         {isSymbolPrompt ? (
           <div className="max-w-[720px] text-zinc-900">
             <div className="flex flex-nowrap items-center gap-3 md:gap-4 overflow-x-auto whitespace-nowrap py-1 pb-2 text-[26.5px] md:text-[32px] leading-[1.12] font-semibold">
@@ -73,8 +73,8 @@ export default function QuestionView({
 
       {/* Matrix block */}
       {isMatrix && (
-        <div className="mt-6 max-w-[720px]">
-          <div className="grid grid-cols-3 gap-2 md:gap-4 w-fit mx-auto">
+        <div className="mt-4 md:mt-3 max-w-[720px]">
+          <div className="grid grid-cols-3 gap-2 md:gap-3 w-fit mx-auto">
             {question.grid.map((cell, i) =>
               cell ? (
                 <MatrixFigure key={i} layout={cell.layout} size="lg" />
