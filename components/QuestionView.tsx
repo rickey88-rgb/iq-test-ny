@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import type { Question } from "@/lib/questions";
+import type { Question, MatrixCell } from "@/lib/questions";
 import Option from "@/components/Option";
 import MatrixFigure from "@/components/MatrixFigure";
 import { PrimaryButton } from "@/components/ui";
@@ -38,6 +38,7 @@ export default function QuestionView({
   const isMemory = question.type === "memory";
   const isMatrix = question.type === "matrix";
   const isMc = question.type === "mc";
+
   const [phase, setPhase] = useState<"ready" | "showing" | "answer">("ready");
 
   useEffect(() => {
@@ -46,30 +47,49 @@ export default function QuestionView({
 
   const canAnswer = !locked && (!isMemory || phase === "answer");
 
-  const showSequence = async () => {
-    if (!isMemory || locked) return;
-    setPhase("showing");
-    await new Promise((r) => setTimeout(r, question.showMs));
-    setPhase("answer");
-  };
-
   const prompt = useMemo(() => {
     if (question.type === "mc") return question.prompt;
     if (question.type === "matrix") return question.prompt;
     return question.questionText;
   }, [question]);
 
-  const hasVisualSequence =
-    isMc &&
-    Array.isArray(question.sequence) &&
-    question.sequence.length > 0;
+  const mcSequence: (VisualPatternFigure | null)[] =
+    isMc && Array.isArray(question.sequence)
+      ? (question.sequence as (VisualPatternFigure | null)[])
+      : [];
 
-  const hasFigureOptions =
-    isMc &&
-    Array.isArray(question.figureOptions) &&
-    question.figureOptions.length > 0;
+  const mcFigureOptions: VisualPatternFigure[] =
+    isMc && Array.isArray(question.figureOptions)
+      ? (question.figureOptions as VisualPatternFigure[])
+      : [];
 
-  const isSymbolPrompt = !isMatrix && !hasVisualSequence && looksLikeSymbols(prompt);
+  const mcOptions: string[] = isMc ? (question.options as string[]) : [];
+
+  const matrixGrid: (MatrixCell | null)[] =
+    isMatrix ? (question.grid as (MatrixCell | null)[]) : [];
+
+  const matrixOptions: MatrixCell[] =
+    isMatrix ? (question.options as MatrixCell[]) : [];
+
+  const memorySequence: (string | number)[] =
+    isMemory && Array.isArray(question.sequence)
+      ? (question.sequence as (string | number)[])
+      : [];
+
+  const memoryShowMs: number = isMemory ? question.showMs : 0;
+
+  const hasVisualSequence = mcSequence.length > 0;
+  const hasFigureOptions = mcFigureOptions.length > 0;
+
+  const isSymbolPrompt =
+    !isMatrix && !hasVisualSequence && looksLikeSymbols(prompt);
+
+  const showSequence = async () => {
+    if (!isMemory || locked) return;
+    setPhase("showing");
+    await new Promise((resolve) => setTimeout(resolve, memoryShowMs));
+    setPhase("answer");
+  };
 
   const renderPatternSequenceItem = (
     item: VisualPatternFigure | null,
@@ -103,11 +123,10 @@ export default function QuestionView({
             </div>
 
             <div className="flex flex-nowrap items-center gap-2.5 md:gap-3 overflow-x-auto whitespace-nowrap py-2 pb-2">
-  {(question.sequence as (VisualPatternFigure | null)[]).map(
-    (item: VisualPatternFigure | null, i: number) =>
-      renderPatternSequenceItem(item, i)
-  )}
-</div>
+              {mcSequence.map((item: VisualPatternFigure | null, i: number) =>
+                renderPatternSequenceItem(item, i)
+              )}
+            </div>
           </div>
         ) : isSymbolPrompt ? (
           <div className="max-w-[720px] text-zinc-900">
@@ -126,7 +145,7 @@ export default function QuestionView({
       {isMatrix && (
         <div className="mt-4 md:mt-2 max-w-[720px]">
           <div className="grid grid-cols-3 gap-2 md:gap-3 w-fit mx-auto">
-            {question.grid.map((cell, i) =>
+            {matrixGrid.map((cell: MatrixCell | null, i: number) =>
               cell ? (
                 <MatrixFigure key={i} {...cell} size="lg" />
               ) : (
@@ -148,20 +167,28 @@ export default function QuestionView({
 
           {phase === "showing" && (
             <div className="rounded-2xl border border-black/10 bg-white/70 px-5 py-4 max-w-[720px]">
-              <div className="text-xs text-zinc-500 mb-2">Memorize the sequence</div>
+              <div className="text-xs text-zinc-500 mb-2">
+                Memorize the sequence
+              </div>
 
-              {(question.sequence?.length ?? 0) >= 7 ? (
+              {memorySequence.length >= 7 ? (
                 <div className="grid grid-flow-col auto-cols-fr items-center gap-2 md:gap-3 whitespace-nowrap pb-1 text-[clamp(18px,5.2vw,30px)] md:text-[30px] font-semibold text-zinc-900">
-                  {question.sequence.map((x, i) => (
-                    <span key={i} className="min-w-0 text-center font-mono tabular-nums">
+                  {memorySequence.map((x: string | number, i: number) => (
+                    <span
+                      key={i}
+                      className="min-w-0 text-center font-mono tabular-nums"
+                    >
                       {x}
                     </span>
                   ))}
                 </div>
               ) : (
                 <div className="flex flex-nowrap items-center gap-3 md:gap-4 overflow-x-auto whitespace-nowrap pb-1 text-[26px] md:text-[30px] font-semibold text-zinc-900 after:content-[''] after:block after:w-4 after:flex-none">
-                  {question.sequence.map((x, i) => (
-                    <span key={i} className="shrink-0 min-w-[32px] md:min-w-[36px] text-center">
+                  {memorySequence.map((x: string | number, i: number) => (
+                    <span
+                      key={i}
+                      className="shrink-0 min-w-[32px] md:min-w-[36px] text-center"
+                    >
                       {x}
                     </span>
                   ))}
@@ -171,7 +198,9 @@ export default function QuestionView({
           )}
 
           {phase === "answer" && (
-            <div className="text-xs text-zinc-500">Which option shows the same order?</div>
+            <div className="text-xs text-zinc-500">
+              Which option shows the same order?
+            </div>
           )}
         </div>
       )}
@@ -184,7 +213,7 @@ export default function QuestionView({
         ].join(" ")}
       >
         {isMatrix
-          ? question.options.map((opt, i) => (
+          ? matrixOptions.map((opt: MatrixCell, i: number) => (
               <Option
                 key={i}
                 label={LABELS[i]}
@@ -194,16 +223,13 @@ export default function QuestionView({
                 disabled={!canAnswer}
               />
             ))
-          : question.options.map((opt, i) => (
+          : mcOptions.map((opt: string, i: number) => (
               <Option
                 key={i}
                 label={LABELS[i]}
                 visual={
-                  hasFigureOptions && question.figureOptions[i] ? (
-                    <PatternFigure
-                      {...(question.figureOptions[i] as VisualPatternFigure)}
-                      size="sm"
-                    />
+                  hasFigureOptions && mcFigureOptions[i] ? (
+                    <PatternFigure {...mcFigureOptions[i]} size="sm" />
                   ) : undefined
                 }
                 text={hasFigureOptions ? undefined : opt}

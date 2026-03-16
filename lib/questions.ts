@@ -91,7 +91,7 @@ export type MatrixQuestion = {
   options: MatrixCell[];
   correctIndex: number;
 };
-export type Question = MCQuestion | MemoryQuestion | MatrixQuestion;
+export type Question = McQuestion | MemoryQuestion | MatrixQuestion;
 export const QUESTIONS: Question[] = [
   {
   id: "q01",
