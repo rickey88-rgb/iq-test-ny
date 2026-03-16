@@ -37,7 +37,7 @@ export default function PatternFigure({
 }: PatternFigureProps) {
   const palette = toneMap[tone];
   const boxSize = size === "sm" ? 24 : 28;
-  const innerScale = size === "sm" ? "scale(0.92)" : "scale(1)";
+  const filterId = `glow-${shape}-${tone}-${size}`;
 
   return (
     <div
@@ -51,11 +51,21 @@ export default function PatternFigure({
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         aria-hidden="true"
-        style={{ transform: innerScale }}
       >
         <defs>
-          <filter id={`glow-${shape}-${tone}-${size}`} x="-50%" y="-50%" width="200%" height="200%">
-            <feDropShadow dx="0" dy="0" stdDeviation="1.8" floodColor={palette.glow} />
+          <filter
+            id={filterId}
+            x="-50%"
+            y="-50%"
+            width="200%"
+            height="200%"
+          >
+            <feDropShadow
+              dx="0"
+              dy="0"
+              stdDeviation="1.8"
+              floodColor={palette.glow}
+            />
           </filter>
         </defs>
 
@@ -64,28 +74,33 @@ export default function PatternFigure({
             <circle
               cx="14"
               cy="14"
-              r="8"
+              r="9.2"
               fill={palette.fill}
               stroke={palette.stroke}
               strokeWidth="1.4"
-              filter={`url(#glow-${shape}-${tone}-${size})`}
+              filter={`url(#${filterId})`}
             />
-            <circle cx="11.2" cy="11.2" r="2.1" fill="rgba(255,255,255,0.18)" />
+            <circle
+              cx="10.8"
+              cy="10.8"
+              r="2.3"
+              fill="rgba(255,255,255,0.18)"
+            />
           </>
         )}
 
         {shape === "triangle" && (
           <>
             <path
-              d="M14 6.2L21.2 19.8H6.8L14 6.2Z"
+              d="M14 4.9L22.4 20.7H5.6L14 4.9Z"
               fill={palette.fill}
               stroke={palette.stroke}
               strokeWidth="1.4"
               strokeLinejoin="round"
-              filter={`url(#glow-${shape}-${tone}-${size})`}
+              filter={`url(#${filterId})`}
             />
             <path
-              d="M14 8.7L18.6 17.3H9.4L14 8.7Z"
+              d="M14 7.8L19.3 17.8H8.7L14 7.8Z"
               fill="rgba(255,255,255,0.12)"
             />
           </>
@@ -94,15 +109,15 @@ export default function PatternFigure({
         {shape === "diamond" && (
           <>
             <path
-              d="M14 5.5L22 14L14 22.5L6 14L14 5.5Z"
+              d="M14 4.8L23.2 14L14 23.2L4.8 14L14 4.8Z"
               fill={palette.fill}
               stroke={palette.stroke}
               strokeWidth="1.4"
               strokeLinejoin="round"
-              filter={`url(#glow-${shape}-${tone}-${size})`}
+              filter={`url(#${filterId})`}
             />
             <path
-              d="M14 8.2L18.8 14L14 19.8L9.2 14L14 8.2Z"
+              d="M14 7.6L19.5 14L14 20.4L8.5 14L14 7.6Z"
               fill="rgba(255,255,255,0.12)"
             />
           </>
@@ -113,14 +128,19 @@ export default function PatternFigure({
             <circle
               cx="14"
               cy="14"
-              r="7.4"
+              r="8.4"
               stroke={palette.stroke}
-              strokeWidth="3.2"
+              strokeWidth="3.6"
               opacity="0.95"
-              filter={`url(#glow-${shape}-${tone}-${size})`}
+              filter={`url(#${filterId})`}
             />
-            <circle cx="14" cy="14" r="4.4" fill="#0f172a" />
-            <circle cx="11.5" cy="11.3" r="1.5" fill="rgba(255,255,255,0.16)" />
+            <circle cx="14" cy="14" r="4.8" fill="#0f172a" />
+            <circle
+              cx="11.2"
+              cy="11"
+              r="1.6"
+              fill="rgba(255,255,255,0.16)"
+            />
           </>
         )}
       </svg>
