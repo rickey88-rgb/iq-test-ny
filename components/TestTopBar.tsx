@@ -60,7 +60,7 @@ export default function TestTopBar({
 
   return (
     <div className="sticky top-0 z-50 w-full bg-white/85 backdrop-blur border-b border-black/5">
-      <div className="mx-auto max-w-test px-4 md:px-6 py-3">
+      <div className="mx-auto max-w-test px-4 md:px-6 py-3 md:py-2">
         {/* Progress bar */}
         <div className="h-[3px] w-full bg-black/10 rounded-full overflow-hidden">
           <div
@@ -69,7 +69,7 @@ export default function TestTopBar({
           />
         </div>
 
-        <div className="mt-3 flex items-center justify-between">
+       <div className="mt-3 md:mt-2 flex items-center justify-between">
           <div className="text-sm md:text-base text-zinc-600">Question {currentIndex + 1} / {total}</div>
 
           <div className="flex items-baseline gap-2">

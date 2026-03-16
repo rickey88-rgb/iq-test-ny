@@ -7,12 +7,19 @@ export type QuestionDomain =
   | "ruleId"
   | "logic";
 
-export type MCQuestion = {
+type PatternFigure = {
+  shape: "circle" | "triangle" | "diamond" | "ring";
+  tone?: "cyan" | "violet" | "gold" | "neutral";
+};
+
+type McQuestion = {
   id: string;
   type: "mc";
   domain: QuestionDomain;
   prompt: string;
   options: string[];
+  sequence?: (PatternFigure | null)[];
+  figureOptions?: PatternFigure[];
   correctIndex: number;
 };
 
@@ -35,8 +42,44 @@ export type MatrixLayout =
   | "vertical2"
   | "vertical3";
 
+export type MatrixShape =
+  | "circle"
+  | "eye"
+  | "diamond"
+  | "square"
+  | "triangle"
+  | "ring";
+
+export type MatrixFill =
+  | "none"
+  | "full"
+  | "top"
+  | "right"
+  | "bottom"
+  | "left"
+  | "topLeft"
+  | "topRight"
+  | "bottomLeft"
+  | "bottomRight";
+
+export type MatrixMarker = "dot";
+
+export type MatrixMarkerPosition =
+  | "center"
+  | "top"
+  | "right"
+  | "bottom"
+  | "left";
+
 export type MatrixCell = {
-  layout: MatrixLayout;
+  layout?: MatrixLayout;
+
+  shape?: MatrixShape;
+  fill?: MatrixFill;
+  rotation?: 0 | 90 | 180 | 270;
+
+  marker?: MatrixMarker;
+  markerPosition?: MatrixMarkerPosition;
 };
 
 export type MatrixQuestion = {
@@ -54,8 +97,23 @@ export const QUESTIONS: Question[] = [
   id: "q01",
   type: "mc",
   domain: "abstract",
-  prompt: "● ▲ ● ▲ ● ▲ ? ? ?",
-  options: ["● ▲ ●", "▲ ● ▲", "● ● ▲", "▲ ▲ ●"],
+  prompt: "Which figure completes the sequence?",
+  options: ["●", "▲", "◆", "○"],
+  sequence: [
+    { shape: "circle", tone: "cyan" },
+    { shape: "triangle", tone: "violet" },
+    { shape: "circle", tone: "cyan" },
+    { shape: "triangle", tone: "violet" },
+    { shape: "circle", tone: "cyan" },
+    { shape: "triangle", tone: "violet" },
+    null,
+  ],
+  figureOptions: [
+    { shape: "circle", tone: "cyan" },
+    { shape: "triangle", tone: "violet" },
+    { shape: "diamond", tone: "gold" },
+    { shape: "ring", tone: "neutral" },
+  ],
   correctIndex: 0,
 },
   {
@@ -92,14 +150,32 @@ export const QUESTIONS: Question[] = [
   ],
   correctIndex: 0,
 },
-  {
-    id: "q04",
-    type: "mc",
-    domain: "relation",
-    prompt: "Pen is to write as scissors are to:",
-    options: ["Paper", "Cut", "Hand", "Metal"],
-    correctIndex: 1,
-  },
+ {
+  id: "q04",
+  type: "matrix",
+  domain: "abstract",
+  prompt: "Which figure completes the pattern?",
+  grid: [
+    { layout: "center" },
+    { layout: "center" },
+    { layout: "center" },
+
+    { layout: "horizontal2" },
+    { layout: "diagonal2" },
+    { layout: "vertical2" },
+
+    { layout: "horizontal3" },
+    { layout: "diagonal3" },
+    null,
+  ],
+  options: [
+    { layout: "vertical3" },   // correct
+    { layout: "vertical2" },
+    { layout: "diagonal3" },
+    { layout: "horizontal3" },
+  ],
+  correctIndex: 0,
+},
 
   {
     id: "q05",
@@ -120,13 +196,31 @@ export const QUESTIONS: Question[] = [
     correctIndex: 1,
   },
   {
-    id: "q07",
-    type: "mc",
-    domain: "logic",
-    prompt: "If all A are B and all B are C — what follows?",
-    options: ["All A are C", "All C are A", "No A are C", "Some A are not C"],
-    correctIndex: 0,
-  },
+  id: "q07",
+  type: "matrix",
+  domain: "abstract",
+  prompt: "Which symbol completes the pattern?",
+  grid: [
+    { shape: "circle", fill: "topLeft" },
+    { shape: "circle", fill: "topRight" },
+    { shape: "circle", fill: "top" },
+
+    { shape: "circle", fill: "bottomLeft" },
+    { shape: "circle", fill: "bottomRight" },
+    { shape: "circle", fill: "bottom" },
+
+    { shape: "circle", fill: "left" },
+    { shape: "circle", fill: "right" },
+    null,
+  ],
+  options: [
+    { shape: "circle", fill: "full" },   // correct
+    { shape: "circle", fill: "top" },
+    { shape: "circle", fill: "left" },
+    { shape: "circle", fill: "bottom" },
+  ],
+  correctIndex: 0,
+},
   {
     id: "q08",
     type: "mc",
@@ -147,13 +241,31 @@ export const QUESTIONS: Question[] = [
   },
 
   {
-    id: "q10",
-    type: "mc",
-    domain: "numeric",
-    prompt: "2→4\n3→6\n4→8\n5→?",
-    options: ["9", "10", "12", "15"],
-    correctIndex: 1,
-  },
+  id: "q10",
+  type: "matrix",
+  domain: "abstract",
+  prompt: "Which tile completes the pattern?",
+  grid: [
+    { shape: "diamond", fill: "top", marker: "dot", markerPosition: "center" },
+    { shape: "diamond", fill: "right", marker: "dot", markerPosition: "center" },
+    { shape: "diamond", fill: "bottom", marker: "dot", markerPosition: "center" },
+
+    { shape: "diamond", fill: "right", marker: "dot", markerPosition: "center" },
+    { shape: "diamond", fill: "bottom", marker: "dot", markerPosition: "center" },
+    { shape: "diamond", fill: "left", marker: "dot", markerPosition: "center" },
+
+    { shape: "diamond", fill: "bottom", marker: "dot", markerPosition: "center" },
+    { shape: "diamond", fill: "left", marker: "dot", markerPosition: "center" },
+    null,
+  ],
+  options: [
+    { shape: "diamond", fill: "top", marker: "dot", markerPosition: "center" }, // correct
+    { shape: "diamond", fill: "right", marker: "dot", markerPosition: "center" },
+    { shape: "diamond", fill: "bottom", marker: "dot", markerPosition: "center" },
+    { shape: "diamond", fill: "full", marker: "dot", markerPosition: "center" },
+  ],
+  correctIndex: 0,
+},
 
   {
     id: "q11",
@@ -173,20 +285,32 @@ export const QUESTIONS: Question[] = [
     correctIndex: 1,
   },
 
-  {
-    id: "q13",
-    type: "mc",
-    domain: "verbal",
-    prompt:
-      "All plins are zorps.\nSome zorps are blaks.\nWhat is logically certain?",
-    options: [
-      "All plins are blaks",
-      "Some plins are blaks",
-      "No plins are blaks",
-      "It cannot be determined",
-    ],
-    correctIndex: 3,
-  },
+ {
+  id: "q13",
+  type: "matrix",
+  domain: "abstract",
+  prompt: "Which figure completes the pattern?",
+  grid: [
+    { shape: "square", fill: "topLeft" },
+    { shape: "square", fill: "topRight" },
+    { shape: "square", fill: "bottomRight" },
+
+    { shape: "circle", fill: "topLeft" },
+    { shape: "circle", fill: "topRight" },
+    { shape: "circle", fill: "bottomRight" },
+
+    { shape: "diamond", fill: "topLeft" },
+    { shape: "diamond", fill: "topRight" },
+    null,
+  ],
+  options: [
+    { shape: "diamond", fill: "topLeft" },
+    { shape: "diamond", fill: "bottomLeft" },
+    { shape: "diamond", fill: "bottomRight" },
+    { shape: "diamond", fill: "topRight" },
+  ],
+  correctIndex: 2,
+},
   {
     id: "q14",
     type: "mc",
@@ -240,14 +364,32 @@ export const QUESTIONS: Question[] = [
     correctIndex: 0,
   },
 
-    {
-    id: "q19",
-    type: "mc",
-    domain: "logic",
-    prompt: "If some A are B, all B are C, and no C are D — what must be true?",
-    options: ["Some A are C", "Some A are D", "All A are C", "No A are D"],
-    correctIndex: 0,
-  },
+  {
+  id: "q19",
+  type: "matrix",
+  domain: "abstract",
+  prompt: "Which figure completes the pattern?",
+  grid: [
+    { shape: "ring", fill: "top", marker: "dot", markerPosition: "left" },
+    { shape: "ring", fill: "right", marker: "dot", markerPosition: "top" },
+    { shape: "ring", fill: "bottom", marker: "dot", markerPosition: "right" },
+
+    { shape: "ring", fill: "right", marker: "dot", markerPosition: "bottom" },
+    { shape: "ring", fill: "bottom", marker: "dot", markerPosition: "left" },
+    { shape: "ring", fill: "left", marker: "dot", markerPosition: "top" },
+
+    { shape: "ring", fill: "bottom", marker: "dot", markerPosition: "right" },
+    { shape: "ring", fill: "left", marker: "dot", markerPosition: "bottom" },
+    null,
+  ],
+  options: [
+    { shape: "ring", fill: "top", marker: "dot", markerPosition: "right" },
+    { shape: "ring", fill: "top", marker: "dot", markerPosition: "left" },
+    { shape: "ring", fill: "left", marker: "dot", markerPosition: "left" },
+    { shape: "ring", fill: "bottom", marker: "dot", markerPosition: "left" },
+  ],
+  correctIndex: 1,
+},
 
   {
     id: "q20",
@@ -324,15 +466,32 @@ export const QUESTIONS: Question[] = [
     correctIndex: 0,
   },
 
-  {
-    id: "q26",
-    type: "mc",
-    domain: "ruleId",
-    prompt:
-      "Rule A (examples):\nCAT → TAC\nDOG → GOD\n\nSwitch to Rule B: move the last letter to the front.\nWhich option fits Rule B?",
-    options: ["LAMP → AMPL", "LAMP → PLAM", "LAMP → LMAP", "LAMP → LAMP"],
-    correctIndex: 1,
-  },
+ {
+  id: "q26",
+  type: "matrix",
+  domain: "abstract",
+  prompt: "Which figure completes the pattern?",
+  grid: [
+    { shape: "diamond", fill: "top", marker: "dot", markerPosition: "left" },
+    { shape: "diamond", fill: "right", marker: "dot", markerPosition: "top" },
+    { shape: "diamond", fill: "bottom", marker: "dot", markerPosition: "right" },
+
+    { shape: "diamond", fill: "right", marker: "dot", markerPosition: "bottom" },
+    { shape: "diamond", fill: "bottom", marker: "dot", markerPosition: "left" },
+    { shape: "diamond", fill: "left", marker: "dot", markerPosition: "top" },
+
+    { shape: "diamond", fill: "bottom", marker: "dot", markerPosition: "right" },
+    { shape: "diamond", fill: "left", marker: "dot", markerPosition: "bottom" },
+    null,
+  ],
+  options: [
+    { shape: "diamond", fill: "top", marker: "dot", markerPosition: "right" },
+    { shape: "diamond", fill: "left", marker: "dot", markerPosition: "left" },
+    { shape: "diamond", fill: "top", marker: "dot", markerPosition: "left" },
+    { shape: "diamond", fill: "bottom", marker: "dot", markerPosition: "left" },
+  ],
+  correctIndex: 2,
+},
 
   {
     id: "q27",

@@ -5,8 +5,14 @@ import type { Question } from "@/lib/questions";
 import Option from "@/components/Option";
 import MatrixFigure from "@/components/MatrixFigure";
 import { PrimaryButton } from "@/components/ui";
+import PatternFigure from "@/components/PatternFigure";
 
 const LABELS = ["A", "B", "C", "D"];
+
+type VisualPatternFigure = {
+  shape: "circle" | "triangle" | "diamond" | "ring";
+  tone?: "cyan" | "violet" | "gold" | "neutral";
+};
 
 const looksLikeSymbols = (s: string) => {
   const t = s.replace(/\s+/g, "");
@@ -31,6 +37,7 @@ export default function QuestionView({
 }) {
   const isMemory = question.type === "memory";
   const isMatrix = question.type === "matrix";
+  const isMc = question.type === "mc";
   const [phase, setPhase] = useState<"ready" | "showing" | "answer">("ready");
 
   useEffect(() => {
@@ -52,13 +59,56 @@ export default function QuestionView({
     return question.questionText;
   }, [question]);
 
-  const isSymbolPrompt = !isMatrix && looksLikeSymbols(prompt);
+  const hasVisualSequence =
+    isMc &&
+    Array.isArray(question.sequence) &&
+    question.sequence.length > 0;
+
+  const hasFigureOptions =
+    isMc &&
+    Array.isArray(question.figureOptions) &&
+    question.figureOptions.length > 0;
+
+  const isSymbolPrompt = !isMatrix && !hasVisualSequence && looksLikeSymbols(prompt);
+
+  const renderPatternSequenceItem = (
+    item: VisualPatternFigure | null,
+    idx: number
+  ) => {
+    if (item === null) {
+      return (
+        <div
+          key={idx}
+          className="flex items-center justify-center shrink-0"
+          style={{ width: 28, height: 28 }}
+        >
+          <span className="text-zinc-900/70 text-[22px] md:text-[24px] font-semibold leading-none">
+            ?
+          </span>
+        </div>
+      );
+    }
+
+    return <PatternFigure key={idx} {...item} size="md" />;
+  };
 
   return (
     <div className="w-full">
       {/* Question prompt */}
       <div className="mt-4 md:mt-0">
-        {isSymbolPrompt ? (
+        {hasVisualSequence ? (
+          <div className="max-w-[720px] text-zinc-900">
+            <div className="whitespace-pre-line text-[20px] md:text-[22px] leading-snug font-medium">
+              {prompt}
+            </div>
+
+            <div className="flex flex-nowrap items-center gap-2.5 md:gap-3 overflow-x-auto whitespace-nowrap py-2 pb-2">
+              {question.sequence.map((item, i) =>
+                renderPatternSequenceItem(item as VisualPatternFigure | null, i)
+              )}
+            </div>
+          </div>
+        ) : isSymbolPrompt ? (
           <div className="max-w-[720px] text-zinc-900">
             <div className="flex flex-nowrap items-center gap-3 md:gap-4 overflow-x-auto whitespace-nowrap py-1 pb-2 text-[26.5px] md:text-[32px] leading-[1.12] font-semibold">
               {prompt}
@@ -77,7 +127,7 @@ export default function QuestionView({
           <div className="grid grid-cols-3 gap-2 md:gap-3 w-fit mx-auto">
             {question.grid.map((cell, i) =>
               cell ? (
-                <MatrixFigure key={i} layout={cell.layout} size="lg" />
+                <MatrixFigure key={i} {...cell} size="lg" />
               ) : (
                 <MatrixFigure key={i} missing size="lg" />
               )
@@ -125,7 +175,7 @@ export default function QuestionView({
         </div>
       )}
 
-           {/* Options */}
+      {/* Options */}
       <div
         className={[
           "mt-4 md:mt-3 grid gap-3",
@@ -137,7 +187,7 @@ export default function QuestionView({
               <Option
                 key={i}
                 label={LABELS[i]}
-                visual={<MatrixFigure layout={opt.layout} size="sm" />}
+                visual={<MatrixFigure {...opt} size="sm" />}
                 selected={selectedIndex === i}
                 onSelect={() => canAnswer && onSelect(i)}
                 disabled={!canAnswer}
@@ -147,7 +197,15 @@ export default function QuestionView({
               <Option
                 key={i}
                 label={LABELS[i]}
-                text={opt}
+                visual={
+                  hasFigureOptions && question.figureOptions[i] ? (
+                    <PatternFigure
+                      {...(question.figureOptions[i] as VisualPatternFigure)}
+                      size="sm"
+                    />
+                  ) : undefined
+                }
+                text={hasFigureOptions ? undefined : opt}
                 selected={selectedIndex === i}
                 onSelect={() => canAnswer && onSelect(i)}
                 disabled={!canAnswer}
@@ -156,8 +214,8 @@ export default function QuestionView({
       </div>
 
       <div className="mt-4 text-xs text-zinc-500 md:hidden">
-  You cannot return to previous questions.
-</div>
+        You cannot return to previous questions.
+      </div>
     </div>
   );
 }
