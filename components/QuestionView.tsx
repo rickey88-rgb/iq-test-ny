@@ -103,9 +103,9 @@ export default function QuestionView({
         <div
           key={idx}
           className="flex items-center justify-center shrink-0"
-          style={{ width: 28, height: 28 }}
+          style={{ width: 30, height: 30 }}
         >
-          <span className="text-zinc-900/70 text-[22px] md:text-[24px] font-semibold leading-none">
+          <span className="text-zinc-900/70 text-[24px] md:text-[26px] font-semibold leading-none">
             ?
           </span>
         </div>
@@ -232,7 +232,7 @@ export default function QuestionView({
                 label={LABELS[i]}
                 visual={
                   isMc && hasFigureOptions && mcFigureOptions[i] ? (
-                    <PatternFigure {...mcFigureOptions[i]} size="sm" />
+                    <PatternFigure {...mcFigureOptions[i]} size="lg" />
                   ) : undefined
                 }
                 text={isMc && hasFigureOptions ? undefined : opt}
