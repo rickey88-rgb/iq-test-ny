@@ -116,14 +116,14 @@ export const QUESTIONS: Question[] = [
   ],
   correctIndex: 0,
 },
-  {
-    id: "q02",
-    type: "mc",
-    domain: "numeric",
-    prompt: "5, 10, 15, ?",
-    options: ["18", "20", "25", "30"],
-    correctIndex: 1,
-  },
+ {
+  id: "q02",
+  type: "mc",
+  domain: "numeric",
+  prompt: "Continue the sequence: 5, 10, 15, ?",
+  options: ["18", "20", "25", "30"],
+  correctIndex: 1,
+},
   {
   id: "q03",
   type: "matrix",
@@ -627,15 +627,15 @@ export const QUESTIONS: Question[] = [
     correctIndex: 0,
   },
 
-  {
-    id: "q39",
-    type: "mc",
-    domain: "ruleId",
-    prompt:
-      "Rule A (examples):\n1 3 5 → 9\n2 4 6 → 12\n\nSwitch to Rule B: answer = (middle number) × 2.\nWhich option fits Rule B?",
-    options: ["3 7 9 → 14", "3 7 9 → 19", "3 7 9 → 16", "3 7 9 → 7"],
-    correctIndex: 0,
-  },
+ {
+  id: "q39",
+  type: "mc",
+  domain: "numeric",
+  prompt:
+    "△ + ○ = 8\n○ + □ = 12\n△ + □ = 10\n\nWhat is:\n△ × □ − ○ = ?",
+  options: ["12", "16", "20", "24"],
+  correctIndex: 1,
+},
 
   {
     id: "q40",
