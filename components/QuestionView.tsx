@@ -103,10 +103,11 @@ export default function QuestionView({
             </div>
 
             <div className="flex flex-nowrap items-center gap-2.5 md:gap-3 overflow-x-auto whitespace-nowrap py-2 pb-2">
-              {question.sequence.map((item, i) =>
-                renderPatternSequenceItem(item as VisualPatternFigure | null, i)
-              )}
-            </div>
+  {(question.sequence as (VisualPatternFigure | null)[]).map(
+    (item: VisualPatternFigure | null, i: number) =>
+      renderPatternSequenceItem(item, i)
+  )}
+</div>
           </div>
         ) : isSymbolPrompt ? (
           <div className="max-w-[720px] text-zinc-900">
