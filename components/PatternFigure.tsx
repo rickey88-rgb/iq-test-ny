@@ -4,7 +4,7 @@ type PatternFigureData = {
 };
 
 type PatternFigureProps = PatternFigureData & {
-  size?: "sm" | "md";
+  size?: "sm" | "md" | "lg";
 };
 
 const toneMap = {
@@ -36,7 +36,14 @@ export default function PatternFigure({
   size = "md",
 }: PatternFigureProps) {
   const palette = toneMap[tone];
-  const boxSize = size === "sm" ? 24 : 28;
+
+  const boxSize =
+    size === "sm"
+      ? 24
+      : size === "lg"
+        ? 44
+        : 30;
+
   const filterId = `glow-${shape}-${tone}-${size}`;
 
   return (
