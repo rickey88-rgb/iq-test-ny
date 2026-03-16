@@ -63,7 +63,10 @@ export default function QuestionView({
       ? (question.figureOptions as VisualPatternFigure[])
       : [];
 
-  const mcOptions: string[] = isMc ? (question.options as string[]) : [];
+  const textOptions: string[] =
+    !isMatrix && Array.isArray(question.options)
+      ? (question.options as string[])
+      : [];
 
   const matrixGrid: (MatrixCell | null)[] =
     isMatrix ? (question.grid as (MatrixCell | null)[]) : [];
@@ -223,16 +226,16 @@ export default function QuestionView({
                 disabled={!canAnswer}
               />
             ))
-          : mcOptions.map((opt: string, i: number) => (
+          : textOptions.map((opt: string, i: number) => (
               <Option
                 key={i}
                 label={LABELS[i]}
                 visual={
-                  hasFigureOptions && mcFigureOptions[i] ? (
+                  isMc && hasFigureOptions && mcFigureOptions[i] ? (
                     <PatternFigure {...mcFigureOptions[i]} size="sm" />
                   ) : undefined
                 }
-                text={hasFigureOptions ? undefined : opt}
+                text={isMc && hasFigureOptions ? undefined : opt}
                 selected={selectedIndex === i}
                 onSelect={() => canAnswer && onSelect(i)}
                 disabled={!canAnswer}
